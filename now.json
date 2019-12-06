@@ -3,24 +3,5 @@
     "APP_KEY": "@app_key",
     "FIREBASE_PRIVATE_KEY_ID": "@firebase_private_key_id",
     "FIREBASE_PRIVATE_KEY": "@firebase_private_key"
-  },
-  "builds": [
-    {
-      "src": "server/**/*.ts",
-      "use": "@now/node",
-      "config": {
-        "maxLambdaSize": "15mb"
-      }
-    },
-    {
-      "src": "www/next.config.js",
-      "use": "@now/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "server/routes/api"
-    }
-  ]
+  }
 }
