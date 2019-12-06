@@ -11,6 +11,10 @@
       "config": {
         "maxLambdaSize": "15mb"
       }
+    },
+    {
+      "src": "www/next.config.js",
+      "use": "@now/next"
     }
   ],
   "routes": [
