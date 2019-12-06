@@ -31,8 +31,5 @@ yarn-error.log*
 # TSC build output
 /dist
 
-# Now Configuration
-now.json
-
 # Environmental variables
 .env

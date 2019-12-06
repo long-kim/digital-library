@@ -3,4 +3,5 @@ require("dotenv").config();
 
 module.exports = withSass({
   cssModules: true,
+  target: 'serverless',
 });
