@@ -25,14 +25,14 @@ function Copyright() {
   );
 }
 
-const Index: NextPage<IHomeProps> = ({ pathname }) => {
+const Library: NextPage<IHomeProps> = ({ pathname }) => {
   return (
     <React.Fragment>
       <Navbar page={pathname} />
       <Container maxWidth="sm">
         <Box my={4}>
           <Typography variant="h4" component="h1" gutterBottom>
-            Next.js example
+            Library
           </Typography>
           <Link href="/about" color="secondary">
             Go to the about page
@@ -45,8 +45,9 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
   );
 };
 
-Index.getInitialProps = async ctx => {
-  return { pathname: ctx.pathname };
+Library.getInitialProps = async ctx => {
+  const pathname = ctx.pathname ? ctx.pathname : '/';
+  return { pathname };
 };
 
-export default Index;
+export default Library;

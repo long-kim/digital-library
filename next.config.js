@@ -1,7 +1,6 @@
-const withSass = require("@zeit/next-sass");
-require("dotenv").config();
+const withSass = require('@zeit/next-sass');
+const withCSS = require('@zeit/next-css');
 
 module.exports = withSass({
   cssModules: true,
-  target: 'serverless',
 });
