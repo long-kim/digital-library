@@ -2,6 +2,7 @@
   "env": {
     "APP_KEY": "@app_key",
     "FIREBASE_PRIVATE_KEY_ID": "@firebase_private_key_id",
-    "FIREBASE_PRIVATE_KEY": "@firebase_private_key"
+    "FIREBASE_PRIVATE_KEY": "@firebase_private_key",
+    "FIREBASE_API_KEY": "@api-key"
   }
 }

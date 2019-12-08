@@ -1,3 +1,4 @@
+import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import MuiLink from '@material-ui/core/Link';
@@ -7,6 +8,8 @@ import React from 'react';
 import Link from '../components/Link';
 import Navbar from '../components/navbar/Navbar';
 import ProTip from '../components/ProTip';
+import { firebaseConfig } from '../firebase/config';
+import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
 interface IHomeProps {
   pathname?: string;
@@ -26,6 +29,8 @@ function Copyright() {
 }
 
 const Index: NextPage<IHomeProps> = ({ pathname }) => {
+  const [user, handleLogin, handleLogout] = useFirebaseAuth(firebaseConfig);
+
   return (
     <React.Fragment>
       <Navbar page={pathname} />
@@ -37,6 +42,18 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
           <Link href="/about" color="secondary">
             Go to the about page
           </Link>
+          <br />
+          <Button variant="contained" color="primary" onClick={handleLogin}>
+            Log in
+          </Button>
+          <Button variant="contained" color="primary" onClick={handleLogout}>
+            Log out
+          </Button>
+          {user && (
+            <Typography variant="body1">
+              Logged is as {`${user!.displayName}`}
+            </Typography>
+          )}
           <ProTip />
           <Copyright />
         </Box>

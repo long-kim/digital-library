@@ -1,3 +1,4 @@
+import { auth } from 'firebase-admin';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const login = (req: NextApiRequest, res: NextApiResponse) => {
