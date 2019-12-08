@@ -1,12 +1,12 @@
-import React from 'react';
-import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import Container from '@material-ui/core/Container';
 import MuiLink from '@material-ui/core/Link';
-import ProTip from '../components/ProTip';
+import Typography from '@material-ui/core/Typography';
+import { NextPage } from 'next';
+import React from 'react';
 import Link from '../components/Link';
 import Navbar from '../components/navbar/Navbar';
-import { NextPage } from 'next';
+import ProTip from '../components/ProTip';
 
 interface IHomeProps {
   pathname?: string;

@@ -1,6 +1,6 @@
-import React from 'react';
+import { fade, InputBase, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
-import { Theme, InputBase, fade } from '@material-ui/core';
+import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

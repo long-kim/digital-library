@@ -1,7 +1,7 @@
-import React from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { AppBar, Toolbar, Typography, IconButton } from '@material-ui/core';
+import { AppBar, IconButton, Toolbar, Typography } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import React from 'react';
 import NavLink from './NavLink';
 import SearchBar from './SearchBar';
 

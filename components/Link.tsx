@@ -1,10 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-has-content */
-import React from 'react';
-import PropTypes, { string } from 'prop-types';
-import clsx from 'clsx';
-import { useRouter } from 'next/router';
-import NextLink from 'next/link';
 import MuiLink from '@material-ui/core/Link';
+import clsx from 'clsx';
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import React from 'react';
 
 interface INextComposedProp {
   as: string;

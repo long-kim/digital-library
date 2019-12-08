@@ -1,8 +1,8 @@
-import React from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Link from '@material-ui/core/Link';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import Typography from '@material-ui/core/Typography';
+import React from 'react';
 
 const LightBulbIcon: React.FC<{ className: string }> = props => (
   <SvgIcon {...props}>
