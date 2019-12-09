@@ -33,7 +33,7 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
 
   return (
     <React.Fragment>
-      <Navbar page={pathname} />
+      <Navbar page={pathname} user={user} />
       <Container maxWidth="sm">
         <Box my={4}>
           <Typography variant="h4" component="h1" gutterBottom>

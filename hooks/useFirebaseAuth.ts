@@ -14,7 +14,9 @@ const useFirebaseAuth: (
   const [user, setUser] = useState<firebase.User>();
 
   useEffect(() => {
-    firebase.initializeApp(credentials);
+    if (!firebase.apps.length) {
+      firebase.initializeApp(credentials);
+    }
 
     firebase.auth().onAuthStateChanged(async fbUser => {
       if (fbUser) {

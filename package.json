@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 4000",
     "build": "next build",
     "start": "next start"
   },
@@ -19,6 +19,7 @@
     "dotenv": "^8.2.0",
     "firebase": "^7.5.1",
     "firebase-admin": "^8.8.0",
+    "formik": "^2.0.6",
     "js-logger": "^1.6.0",
     "next": "9.1.4",
     "node-sass": "^4.13.0",

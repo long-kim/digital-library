@@ -7,6 +7,8 @@ import React from 'react';
 import Link from '../components/Link';
 import Navbar from '../components/navbar/Navbar';
 import ProTip from '../components/ProTip';
+import { firebaseConfig } from '../firebase/config';
+import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
 interface IHomeProps {
   pathname?: string;
@@ -26,9 +28,11 @@ function Copyright() {
 }
 
 const Library: NextPage<IHomeProps> = ({ pathname }) => {
+  const [user, handleLogin, handleLogout] = useFirebaseAuth(firebaseConfig);
+
   return (
     <React.Fragment>
-      <Navbar page={pathname} />
+      <Navbar page={pathname} user={user} />
       <Container maxWidth="sm">
         <Box my={4}>
           <Typography variant="h4" component="h1" gutterBottom>

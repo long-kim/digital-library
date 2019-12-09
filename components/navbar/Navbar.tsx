@@ -1,9 +1,11 @@
 import { AppBar, IconButton, Toolbar, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import firebase from 'firebase/app';
 import React from 'react';
 import NavLink from './NavLink';
 import SearchBar from './SearchBar';
+import UserMenu from './UserMenu';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -21,9 +23,10 @@ const useStyles = makeStyles(theme =>
 
 interface INavbarProps {
   page?: string;
+  user: firebase.User | undefined;
 }
 
-const Navbar: React.FC<INavbarProps> = props => {
+const Navbar: React.FC<INavbarProps> = ({ user }) => {
   const classes = useStyles();
 
   return (
@@ -40,9 +43,13 @@ const Navbar: React.FC<INavbarProps> = props => {
             <NavLink href="/contact">Liên hệ</NavLink>
           </div>
           <SearchBar />
-          <IconButton color="inherit">
-            <AccountCircle />
-          </IconButton>
+          {user ? (
+            <UserMenu user={user} />
+          ) : (
+            <IconButton color="inherit">
+              <AccountCircle />
+            </IconButton>
+          )}
         </Toolbar>
       </AppBar>
     </React.Fragment>
