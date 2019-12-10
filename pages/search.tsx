@@ -107,7 +107,6 @@ class Search extends Component<IProps, IState> {
     if (products) {
       currentList = products.slice(indexOfFirst, indexOfLast);
     }
-    console.log(currentList);
     const renderProduct = currentList.map((product: any, i) => {
       let url;
       url = '/display-product/' + product.name;
@@ -116,7 +115,7 @@ class Search extends Component<IProps, IState> {
           <a href={url} style={searchSubTitle}>
             <img src={product.img} alt={product.name} style={searchBook} />
             <div>
-              <p>{product.name}</p>
+              <p style={{ marginTop: '0' }}>{product.name}</p>
             </div>
           </a>
         </div>
