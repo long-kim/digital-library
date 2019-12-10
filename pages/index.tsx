@@ -42,6 +42,9 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
           <Link href="/about" color="secondary">
             Go to the about page
           </Link>
+          <Link href="/search" color="secondary">
+            Go to the search page
+          </Link>
           <br />
           <Button variant="contained" color="primary" onClick={handleLogin}>
             Log in
