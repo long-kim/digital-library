@@ -43,13 +43,7 @@ const Navbar: React.FC<INavbarProps> = ({ user }) => {
             <NavLink href="/contact">Liên hệ</NavLink>
           </div>
           <SearchBar />
-          {user ? (
-            <UserMenu user={user} />
-          ) : (
-            <IconButton color="inherit">
-              <AccountCircle />
-            </IconButton>
-          )}
+          <UserMenu user={user} />
         </Toolbar>
       </AppBar>
     </React.Fragment>

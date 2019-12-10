@@ -32,11 +32,17 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: 'column',
       marginTop: theme.spacing(3),
       '& .MuiTextField-root': {
-        marginBottom: theme.spacing(3),
+        marginBottom: theme.spacing(2),
+        [theme.breakpoints.up('xl')]: {
+          marginBottom: theme.spacing(3),
+        }
       },
     },
     signupButton: {
-      marginTop: theme.spacing(3),
+      marginTop: theme.spacing(1),
+      [theme.breakpoints.up('xl')]: {
+        marginBottom: theme.spacing(3),
+      }
     },
     red: {
       color: theme.palette.error.main,
@@ -53,7 +59,7 @@ const SignUp: NextPage = () => {
       <Navbar user={user} />
       <Grid className={classes.root} container justify="flex-end">
         <Grid className={classes.pane} item component={Box} width="35%">
-          <Typography align="center" variant="h3">
+          <Typography align="center" variant="h4">
             Đăng ký
           </Typography>
           <form className={classes.form} action="/api/login" method="post">
@@ -89,6 +95,13 @@ const SignUp: NextPage = () => {
               ĐĂNG KÝ
             </Button>
           </form>
+          <div>
+            <Typography variant="subtitle2">hoặc đăng nhập bằng</Typography>
+            <Grid container>
+              <Grid item xs={6}>abc</Grid>
+              <Grid item xs={6}>abc</Grid>
+            </Grid>
+          </div>
         </Grid>
       </Grid>
     </React.Fragment>
