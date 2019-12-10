@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Navbar from '../components/navbar/Navbar';
-import { firebaseConfig } from '../firebase/config';
+import Book from './book';
+// import { firebaseConfig } from '../firebase/config';
 // import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
 const searchTitle = {
@@ -111,14 +112,15 @@ class Search extends Component<IProps, IState> {
       let url;
       url = '/display-product/' + product.name;
       return (
-        <div key={i}>
-          <a href={url} style={searchSubTitle}>
-            <img src={product.img} alt={product.name} style={searchBook} />
-            <div>
-              <p style={{ marginTop: '0' }}>{product.name}</p>
-            </div>
-          </a>
-        </div>
+        <Book key={i} name={product.name} img={product.img} url={url} />
+        // <div key={i}>
+        //   <a href={url} style={searchSubTitle}>
+        //     <img src={product.img} alt={product.name} style={searchBook} />
+        //     <div>
+        //       <p style={{ marginTop: '0' }}>{product.name}</p>
+        //     </div>
+        //   </a>
+        // </div>
       );
     });
     return (
