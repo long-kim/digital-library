@@ -13,6 +13,7 @@ import Head from 'next/head';
 import React from 'react';
 import SocialLogin from '../components/auth/SocialLogin';
 import Navbar from '../components/navbar/Navbar';
+import Footer from '../components/footer/Footer';
 import { firebaseConfig } from '../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
@@ -102,6 +103,7 @@ const SignUp: NextPage = () => {
           <SocialLogin />
         </Grid>
       </Grid>
+      <Footer></Footer>
     </React.Fragment>
   );
 };
