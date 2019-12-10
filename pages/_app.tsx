@@ -24,6 +24,7 @@ export default class MyApp extends App {
             href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap&subset=vietnamese"
             rel="stylesheet"
           />
+          <link rel="stylesheet" type="text/css" href="css/nprogress.css" />
         </Head>
         <ThemeProvider theme={theme}>
           <CssBaseline />
