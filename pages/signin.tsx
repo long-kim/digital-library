@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const SignIn: NextPage = () => {
-  const [user] = useFirebaseAuth(firebaseConfig);
+  const [user, handleLogin, handleLogout] = useFirebaseAuth(firebaseConfig);
   const classes = useStyles();
 
   return (
