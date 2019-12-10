@@ -1,13 +1,7 @@
 import { ServerStyleSheets } from '@material-ui/core/styles';
 import Document, { Head, Main, NextScript } from 'next/document';
-import { Router } from 'next/router';
-import NProgress from 'nprogress';
 import React from 'react';
 import theme from '../theme';
-
-Router.events.on('routerChangeStart', () => NProgress.start());
-Router.events.on('routeChangeComplete', () => NProgress.done());
-Router.events.on('routeChangeError', () => NProgress.done());
 
 export default class MyDocument extends Document {
   render() {

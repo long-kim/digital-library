@@ -36,7 +36,7 @@ const Library: NextPage<IHomeProps> = ({ pathname }) => {
       <Head>
         <title>Thư viện | Digital Library</title>
       </Head>
-      <Navbar page={pathname} user={user} />
+      <Navbar page={pathname} user={user} handleLogout={handleLogout} />
       <Container maxWidth="sm">
         <Box my={4}>
           <Typography variant="h4" component="h1" gutterBottom>

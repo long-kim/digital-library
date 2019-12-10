@@ -24,9 +24,10 @@ const useStyles = makeStyles(theme =>
 interface INavbarProps {
   page?: string;
   user: firebase.User | undefined;
+  handleLogout: () => Promise<void>;
 }
 
-const Navbar: React.FC<INavbarProps> = ({ user }) => {
+const Navbar: React.FC<INavbarProps> = ({ user, handleLogout }) => {
   const classes = useStyles();
 
   return (
@@ -43,7 +44,7 @@ const Navbar: React.FC<INavbarProps> = ({ user }) => {
             <NavLink href="/contact">Liên hệ</NavLink>
           </div>
           <SearchBar />
-          <UserMenu user={user} />
+          <UserMenu user={user} handleLogout={handleLogout} />
         </Toolbar>
       </AppBar>
     </React.Fragment>

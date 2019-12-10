@@ -37,7 +37,7 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
       <Head>
         <title>Trang chủ | Digital Library</title>
       </Head>
-      <Navbar page={pathname} user={user} />
+      <Navbar page={pathname} user={user} handleLogout={handleLogout} />
       <Container maxWidth="sm">
         <Box my={4}>
           <Typography variant="h4" component="h1" gutterBottom>
@@ -47,7 +47,7 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
             Go to the about page
           </Link>
           <br />
-          <Button variant="contained" color="primary" onClick={handleLogin}>
+          <Button variant="contained" color="primary" onClick={() => handleLogin()}>
             Log in
           </Button>
           <Button variant="contained" color="primary" onClick={handleLogout}>
