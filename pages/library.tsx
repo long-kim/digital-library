@@ -3,6 +3,7 @@ import Container from '@material-ui/core/Container';
 import MuiLink from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { NextPage } from 'next';
+import Head from 'next/head';
 import React from 'react';
 import Link from '../components/Link';
 import Navbar from '../components/navbar/Navbar';
@@ -32,6 +33,9 @@ const Library: NextPage<IHomeProps> = ({ pathname }) => {
 
   return (
     <React.Fragment>
+      <Head>
+        <title>Thư viện | Digital Library</title>
+      </Head>
       <Navbar page={pathname} user={user} />
       <Container maxWidth="sm">
         <Box my={4}>
