@@ -4,6 +4,7 @@ import Container from '@material-ui/core/Container';
 import MuiLink from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { NextPage } from 'next';
+import Head from 'next/head';
 import React from 'react';
 import Link from '../components/Link';
 import Navbar from '../components/navbar/Navbar';
@@ -33,7 +34,10 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
 
   return (
     <React.Fragment>
-      <Navbar page={pathname} user={user} />
+      <Head>
+        <title>Trang chủ | Digital Library</title>
+      </Head>
+      <Navbar page={pathname} user={user} handleLogout={handleLogout} />
       <Container maxWidth="sm">
         <Box my={4}>
           <Typography variant="h4" component="h1" gutterBottom>
@@ -43,7 +47,7 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
             Go to the about page
           </Link>
           <br />
-          <Button variant="contained" color="primary" onClick={handleLogin}>
+          <Button variant="contained" color="primary" onClick={() => handleLogin()}>
             Log in
           </Button>
           <Button variant="contained" color="primary" onClick={handleLogout}>
