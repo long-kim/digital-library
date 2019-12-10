@@ -39,7 +39,7 @@ const Navbar: React.FC<INavbarProps> = ({ user }) => {
           <div className={classes.links}>
             <NavLink href="/">Home</NavLink>
             <NavLink href="/library">Thư viện</NavLink>
-            <NavLink href="/discover">Khám phá</NavLink>
+            <NavLink href="/discover">Khám Phá</NavLink>
             <NavLink href="/contact">Liên hệ</NavLink>
           </div>
           <SearchBar />

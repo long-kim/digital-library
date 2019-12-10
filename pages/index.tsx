@@ -7,6 +7,7 @@ import { NextPage } from 'next';
 import React from 'react';
 import Link from '../components/Link';
 import Navbar from '../components/navbar/Navbar';
+import Footer from '../components/footer/Footer';
 import ProTip from '../components/ProTip';
 import { firebaseConfig } from '../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
@@ -58,6 +59,7 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
           <Copyright />
         </Box>
       </Container>
+      <Footer></Footer>
     </React.Fragment>
   );
 };

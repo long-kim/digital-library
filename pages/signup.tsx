@@ -12,6 +12,7 @@ import { createStyles, makeStyles } from '@material-ui/styles';
 import { NextPage } from 'next';
 import React from 'react';
 import Navbar from '../components/navbar/Navbar';
+import Footer from '../components/footer/Footer';
 import { firebaseConfig } from '../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
@@ -91,6 +92,7 @@ const SignUp: NextPage = () => {
           </form>
         </Grid>
       </Grid>
+      <Footer></Footer>
     </React.Fragment>
   );
 };
