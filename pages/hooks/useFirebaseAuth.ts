@@ -2,7 +2,7 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
-import providers from '../firebase/providers';
+import providers from '../../firebase/providers';
 
 const useFirebaseAuth: (
   credentials: object,
