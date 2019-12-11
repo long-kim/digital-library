@@ -32,6 +32,7 @@
     "tslint": "^5.20.1"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.11.2",
     "@types/lodash": "^4.14.149",
     "@types/node": "^12.12.16",
     "@types/nprogress": "^0.2.0",

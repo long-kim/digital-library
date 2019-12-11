@@ -11,7 +11,7 @@ import Link from '../components/Link';
 import Navbar from '../components/navbar/Navbar';
 import ProTip from '../components/ProTip';
 import { firebaseConfig } from '../firebase/config';
-import useFirebaseAuth from '../hooks/useFirebaseAuth';
+import useFirebaseAuth from './hooks/useFirebaseAuth';
 
 interface IHomeProps {
   pathname?: string;
@@ -46,6 +46,9 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
           </Typography>
           <Link href="/about" color="secondary">
             Go to the about page
+          </Link>
+          <Link href="/search" color="secondary">
+            Go to the search page
           </Link>
           <br />
           <Button
