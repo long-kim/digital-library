@@ -6,9 +6,9 @@ import Typography from '@material-ui/core/Typography';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import React from 'react';
+import Footer from '../components/footer/Footer';
 import Link from '../components/Link';
 import Navbar from '../components/navbar/Navbar';
-import Footer from '../components/footer/Footer';
 import ProTip from '../components/ProTip';
 import { firebaseConfig } from '../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
@@ -48,7 +48,11 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
             Go to the about page
           </Link>
           <br />
-          <Button variant="contained" color="primary" onClick={() => handleLogin()}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleLogin()}
+          >
             Log in
           </Button>
           <Button variant="contained" color="primary" onClick={handleLogout}>
@@ -63,7 +67,7 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
           <Copyright />
         </Box>
       </Container>
-      <Footer></Footer>
+      <Footer />
     </React.Fragment>
   );
 };

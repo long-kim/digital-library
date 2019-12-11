@@ -31,6 +31,13 @@ export default class MyApp extends App {
             rel="stylesheet"
           />
           <link rel="stylesheet" type="text/css" href="css/nprogress.css" />
+          <style>{`
+            #__next {
+              display: flex;
+              flex-direction: column;
+              min-height: 100vh;
+            }
+          `}</style>
         </Head>
         <ThemeProvider theme={theme}>
           <CssBaseline />
