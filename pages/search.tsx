@@ -113,14 +113,6 @@ class Search extends Component<IProps, IState> {
       url = '/display-product/' + product.name;
       return (
         <Book key={i} name={product.name} img={product.img} url={url} />
-        // <div key={i}>
-        //   <a href={url} style={searchSubTitle}>
-        //     <img src={product.img} alt={product.name} style={searchBook} />
-        //     <div>
-        //       <p style={{ marginTop: '0' }}>{product.name}</p>
-        //     </div>
-        //   </a>
-        // </div>
       );
     });
     return (
