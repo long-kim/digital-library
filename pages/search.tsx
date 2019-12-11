@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Navbar from '../components/navbar/Navbar';
-import Book from './book';
+import Book from '../components/search/book';
 // import { firebaseConfig } from '../firebase/config';
 // import useFirebaseAuth from '../hooks/useFirebaseAuth';
 

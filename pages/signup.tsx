@@ -13,7 +13,7 @@ import { NextPage } from 'next';
 import React from 'react';
 import Navbar from '../components/navbar/Navbar';
 import { firebaseConfig } from '../firebase/config';
-import useFirebaseAuth from '../hooks/useFirebaseAuth';
+import useFirebaseAuth from './hooks/useFirebaseAuth';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
