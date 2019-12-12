@@ -6,6 +6,7 @@ import { Router } from 'next/router';
 import NProgress from 'nprogress';
 import React from 'react';
 import theme from '../theme';
+import Footer from '../components/footer/Footer';
 
 Router.events.on('routerChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
@@ -43,6 +44,7 @@ export default class MyApp extends App {
           <CssBaseline />
           <Component {...pageProps} />
         </ThemeProvider>
+        <Footer></Footer>
       </React.Fragment>
     );
   }

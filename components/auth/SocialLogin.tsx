@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { firebaseConfig } from '../../firebase/config';
 import providers from '../../firebase/providers';
-import useFirebaseAuth from '../../hooks/useFirebaseAuth';
+import useFirebaseAuth from '../../pages/hooks/useFirebaseAuth';
 
 const FACEBOOK_COLOR = '#3b5998';
 

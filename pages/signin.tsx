@@ -14,7 +14,7 @@ import React from 'react';
 import SocialLogin from '../components/auth/SocialLogin';
 import Navbar from '../components/navbar/Navbar';
 import { firebaseConfig } from '../firebase/config';
-import useFirebaseAuth from '../hooks/useFirebaseAuth';
+import useFirebaseAuth from './hooks/useFirebaseAuth';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
