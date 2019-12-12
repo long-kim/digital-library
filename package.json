@@ -10,6 +10,7 @@
   "dependencies": {
     "@material-ui/core": "^4.7.2",
     "@material-ui/icons": "^4.5.1",
+    "@material-ui/lab": "^4.0.0-alpha.35",
     "@types/firebase": "^3.2.1",
     "@types/react-slick": "^0.23.4",
     "@zeit/next-css": "^1.0.1",
