@@ -230,7 +230,7 @@ const Index: NextPage<IHomeProps> = ({ pathname, books }) => {
           </Grid>
         </Grid>
       </Container>
-      <Footer />
+      {/* <Footer></Footer> */}
     </React.Fragment>
   );
 };

@@ -30,14 +30,13 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-interface IProps {
+type IProps = {
   key: number;
   name: string;
   img: string;
   url: string;
 }
 
-interface IState {}
 
 const Book: React.FC<IProps> = ({ key, url, img, name }) => {
   // const key = Book(props.book)

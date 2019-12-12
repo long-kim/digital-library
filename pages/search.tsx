@@ -69,7 +69,7 @@ interface IProps {
 
 const Search: React.FC<IProps> = () => {
   const classes = useStyles();
-  const [totalPage, setTotalPage] = useState(0);
+  // const [totalPage, setTotalPage] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const allProduct = products;

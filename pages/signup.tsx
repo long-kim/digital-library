@@ -103,7 +103,6 @@ const SignUp: NextPage = () => {
           <SocialLogin />
         </Grid>
       </Grid>
-      <Footer></Footer>
     </React.Fragment>
   );
 };
