@@ -6,11 +6,32 @@ const withCSS = require('@zeit/next-css');
 module.exports = withPlugins(
   [
     [withSass, { cssModules: true }],
-    [withOptimizedImages],
+    [
+      withOptimizedImages,
+      {
+        optimizeImagesInDev: true,
+      },
+    ],
     [
       withCSS,
       {
-        webpack: config => {
+        webpack: (config, options) => {
+          const { isServer, dev } = options;
+          config.module.rules.push({
+            test: /\.(jpe?g|png|svg|gif|ico|webp)$/,
+            use: [
+              {
+                loader: 'lqip-loader',
+                options: {
+                  fallback: 'file-loader',
+                  base64: !dev,
+                  publicPath: '/_next/static/images/',
+                  outputPath: `${isServer ? '../' : ''}static/images/`,
+                  name: '[name]-[hash].[ext]',
+                },
+              },
+            ],
+          });
           config.module.rules.push({
             test: /\.(eot|woff|woff2|ttf|svg|png|jpg|gif)$/,
             use: {
