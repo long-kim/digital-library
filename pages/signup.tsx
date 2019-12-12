@@ -15,7 +15,7 @@ import SocialLogin from '../components/auth/SocialLogin';
 import Navbar from '../components/navbar/Navbar';
 import Footer from '../components/footer/Footer';
 import { firebaseConfig } from '../firebase/config';
-import useFirebaseAuth from './hooks/useFirebaseAuth';
+import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -103,7 +103,6 @@ const SignUp: NextPage = () => {
           <SocialLogin />
         </Grid>
       </Grid>
-      <Footer></Footer>
     </React.Fragment>
   );
 };

@@ -1,8 +1,8 @@
+import { createStyles, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import React, { Component, useState } from 'react';
 import Navbar from '../components/navbar/Navbar';
 import Book from '../components/search/book';
-import { makeStyles } from '@material-ui/styles';
-import { Theme, createStyles } from '@material-ui/core';
 import { firebaseConfig } from '../firebase/config';
 import useFirebaseAuth from './hooks/useFirebaseAuth';
 
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-let products = [
+const products = [
   { name: 'Percy Jackson book', img: '/img/book1.jpg' },
   { name: 'Percy Jackson book', img: '/img/book2.jpg' },
   { name: 'Percy Jackson book', img: '/img/book3.jpg' },
@@ -56,9 +56,9 @@ let products = [
   { name: 'Percy Jackson book', img: '/img/book3.jpg' },
 ];
 
-type IProps = {
+interface IProps {
   products: Array<Object>;
-};
+}
 
 // type IState = {
 //   totalPage?: number;
@@ -69,12 +69,12 @@ type IProps = {
 
 const Search: React.FC<IProps> = () => {
   const classes = useStyles();
-  const [totalPage, setTotalPage] = useState(0);
+  // const [totalPage, setTotalPage] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const allProduct = products;
 
-  let handleClick = (param: any) => (event: any) => {
+  const handleClick = (param: any) => (event: any) => {
     if (param === 'forward') {
       if (currentPage < Math.ceil(products.length / perPage)) {
         setCurrentPage(currentPage + 1);
@@ -91,7 +91,7 @@ const Search: React.FC<IProps> = () => {
   const [user, _, handleLogout] = useFirebaseAuth(firebaseConfig);
   const indexOfLast = currentPage * perPage;
   const indexOfFirst = indexOfLast - perPage;
-  let currentList: Array<Object>;
+  let currentList: Object[];
   currentList = [];
   if (products) {
     currentList = products.slice(indexOfFirst, indexOfLast);
