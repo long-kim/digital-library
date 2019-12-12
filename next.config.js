@@ -15,23 +15,7 @@ module.exports = withPlugins(
     [
       withCSS,
       {
-        webpack: (config, options) => {
-          const { isServer, dev } = options;
-          config.module.rules.push({
-            test: /\.(jpe?g|png|svg|gif|ico|webp)$/,
-            use: [
-              {
-                loader: 'lqip-loader',
-                options: {
-                  fallback: 'file-loader',
-                  base64: !dev,
-                  publicPath: '/_next/static/images/',
-                  outputPath: `${isServer ? '../' : ''}static/images/`,
-                  name: '[name]-[hash].[ext]',
-                },
-              },
-            ],
-          });
+        webpack: config => {
           config.module.rules.push({
             test: /\.(eot|woff|woff2|ttf|svg|png|jpg|gif)$/,
             use: {
@@ -48,6 +32,7 @@ module.exports = withPlugins(
     ],
   ],
   {
+    target: 'serverless',
     env: {
       APP_NAME: 'Digital Library',
       FIREBASE_PRIVATE_KEY_ID: process.env.FIREBASE_PRIVATE_KEY_ID,
