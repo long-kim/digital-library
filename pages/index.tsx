@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
         width: '100%',
         height: '100%',
         filter: 'brightness(0.4)',
-        backgroundImage: `url("img/home/cover.png?lqip")`,
+        backgroundImage: `url("img/home/cover.jpg")`,
         backgroundSize: 'cover',
         backgroundPositionY: '50%',
         zIndex: -1,
