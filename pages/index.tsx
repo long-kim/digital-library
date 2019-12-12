@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
         width: '100%',
         height: '100%',
         filter: 'brightness(0.4)',
-        backgroundImage: `url("img/home/cover.png")`,
+        backgroundImage: `url("img/home/cover.png?lqip")`,
         backgroundSize: 'cover',
         backgroundPositionY: '50%',
         zIndex: -1,
@@ -182,6 +182,7 @@ const Index: NextPage<IHomeProps> = ({ pathname, books }) => {
             direction="column"
             alignItems="center"
             spacing={2}
+            className="cover"
           >
             <Grid className={classes.title} item>
               <Typography
@@ -236,7 +237,7 @@ const Index: NextPage<IHomeProps> = ({ pathname, books }) => {
 };
 
 Index.getInitialProps = async ctx => {
-  // Mock data
+  // TODO pull in actual data
   const products = [
     { name: 'Percy Jackson book', img: '/img/book1.jpg', id: 1 },
     { name: 'Percy Jackson book', img: '/img/book2.jpg', id: 2 },
