@@ -9,13 +9,13 @@ import Comment from '../bookDetails/comment';
 import Review from '../bookDetails/review';
 import IReview from './IReview';
 import Book from '../search/book';
+import BorrowModal from '../modal/BorrowModal';
 
 interface IHomeProps {
     pathname?: string;
 }
 
 interface IBook {
-    key: number;
     name: string;
     img: string;
     url: string;
@@ -146,53 +146,85 @@ const reviewList = [
 
 const relatedList = [
     {
-       key: 1,
+    
        name: "Conan",
        img: "https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg",
        url: "#",
     },
     {
-        key: 1,
+    
         name: "Conan",
         img: "https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg",
         url: "#",
      },
      {
-        key: 1,
+    
         name: "Conan",
         img: "https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg",
         url: "#",
      },
      {
-        key: 1,
+    
         name: "Conan",
         img: "https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg",
         url: "#",
      },
      {
-        key: 1,
+    
         name: "Conan",
         img: "https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg",
         url: "#",
      },
      {
-        key: 1,
         name: "Conan",
         img: "https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg",
         url: "#",
      }
 ]
 
+const list = [
+    {
+      fullname: 'Jim Tran',
+      uid: 'abcxyz',
+      bid: '12345',
+    },
+    {
+      fullname: 'Jim Tran',
+      uid: 'abcxyz',
+      bid: '12345',
+    },
+    {
+      fullname: 'Jim Tran',
+      uid: 'abcxyz',
+      bid: '12345',
+    },
+    {
+      fullname: 'Jim Tran',
+      uid: 'abcxyz',
+      bid: '12345',
+    },
+    {
+      fullname: 'Jim Tran',
+      uid: 'abcxyz',
+      bid: '12345',
+    },
+    {
+      fullname: 'Jim Tran',
+      uid: 'abcxyz',
+      bid: '12345',
+    },
+  ];
+
 const BookDetails: NextPage<IHomeProps> = ({ pathname }) => {
     const [user, handleLogin, handleLogout] = useFirebaseAuth(firebaseConfig);
     const classes = useStyles();
 
     const renderReviews = reviewList.map((review: IReview, i) => {
-        return <Review ava={review.ava} name={review.name} rate={review.rate} review={review.review}></Review>
+        return <Review key={i} ava={review.ava} name={review.name} rate={review.rate} review={review.review}></Review>
     });
 
     const renderBooks = relatedList.map((book: IBook, i) => {
-        return <Book key={book.key} name={book.name} img={book.img} url={book.url}></Book>
+        return <Book key={i} name={book.name} img={book.img} url={book.url}></Book>
     });
 
     return (
@@ -216,7 +248,7 @@ const BookDetails: NextPage<IHomeProps> = ({ pathname }) => {
     in the series was published in both countries at the same time. 
                         </div>
                     </div>
-                    <button className={classes.to_cart_btn}>THÊM VÀO GIỎ</button>
+                    <BorrowModal list={list} styles={classes.to_cart_btn}></BorrowModal>
                 </div>
                 <div className={classes.imgs}>
                     <img className={classes.main_img} src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"></img>

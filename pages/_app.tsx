@@ -44,7 +44,6 @@ export default class MyApp extends App {
           <CssBaseline />
           <Component {...pageProps} />
         </ThemeProvider>
-        <Footer></Footer>
       </React.Fragment>
     );
   }

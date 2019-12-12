@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface IProps {
     list: Array<IBorrow>
-    styles? : React.CSSProperties, // Styling button
+    styles? : string, // Styling button
 }
 
 const BorrowModal: React.FC<IProps> = ({list, styles}) => {
@@ -82,7 +82,7 @@ const BorrowModal: React.FC<IProps> = ({list, styles}) => {
     }
 
     const renderBorrower = list.map((borrower: IBorrow, i) => {
-        return <BorrowOption fullname={borrower.fullname} uid={borrower.uid} bid={borrower.bid}></BorrowOption>
+        return <BorrowOption key={i} fullname={borrower.fullname} uid={borrower.uid} bid={borrower.bid}></BorrowOption>
     })
     
     const handleAdd = () => {
@@ -94,8 +94,8 @@ const BorrowModal: React.FC<IProps> = ({list, styles}) => {
     }
 
     return (
-        <Box>
-            <Button variant='outlined' onClick={handleOpen} style={styles}>Nhấn vô đi</Button>
+        <React.Fragment>
+            <Button variant='outlined' onClick={handleOpen} className={styles}>Thêm vào giỏ</Button>
             <Modal 
                 aria-labelledby='modal-title'
                 aria-describedby='modal-content'
@@ -115,7 +115,7 @@ const BorrowModal: React.FC<IProps> = ({list, styles}) => {
                     </Box>
                 </Box>
             </Modal>
-        </Box>
+        </React.Fragment>
     )
 }
 
