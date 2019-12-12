@@ -4,13 +4,14 @@ import Container from '@material-ui/core/Container';
 import MuiLink from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { NextPage } from 'next';
+import Head from 'next/head';
 import React from 'react';
+import Footer from '../components/footer/Footer';
 import Link from '../components/Link';
 import Navbar from '../components/navbar/Navbar';
-import Footer from '../components/footer/Footer';
 import ProTip from '../components/ProTip';
 import { firebaseConfig } from '../firebase/config';
-import useFirebaseAuth from '../hooks/useFirebaseAuth';
+import useFirebaseAuth from './hooks/useFirebaseAuth';
 
 interface IHomeProps {
   pathname?: string;
@@ -34,7 +35,10 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
 
   return (
     <React.Fragment>
-      <Navbar page={pathname} user={user} />
+      <Head>
+        <title>Trang chủ | Digital Library</title>
+      </Head>
+      <Navbar page={pathname} user={user} handleLogout={handleLogout} />
       <Container maxWidth="sm">
         <Box my={4}>
           <Typography variant="h4" component="h1" gutterBottom>
@@ -43,8 +47,15 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
           <Link href="/about" color="secondary">
             Go to the about page
           </Link>
+          <Link href="/search" color="secondary">
+            Go to the search page
+          </Link>
           <br />
-          <Button variant="contained" color="primary" onClick={handleLogin}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleLogin()}
+          >
             Log in
           </Button>
           <Button variant="contained" color="primary" onClick={handleLogout}>
@@ -59,7 +70,7 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
           <Copyright />
         </Box>
       </Container>
-      <Footer></Footer>
+      <Footer />
     </React.Fragment>
   );
 };
