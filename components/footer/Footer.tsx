@@ -4,6 +4,9 @@ import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    container: {
+      marginTop: 'auto',
+    },
     background: {
       display: 'flex',
       backgroundColor: '#0f141f',
@@ -53,32 +56,39 @@ const useStyles = makeStyles((theme: Theme) =>
 const Footer: React.FC = () => {
   const footer = useStyles();
   return (
-    <Box className={footer.background}>
-      <Box className={footer.leftContainer}>
-        <Typography>Kết nối với chúng tôi</Typography>
-        <Box className={footer.socialIconContainer}>
-          <CardMedia className={footer.socialIcon} image="/img/fb.png" />
-          <CardMedia className={footer.socialIcon} image="/img/twitter.png" />
+    <React.Fragment>
+      <footer className={footer.container}>
+        <Box className={footer.background}>
+          <Box className={footer.leftContainer}>
+            <Typography>Kết nối với chúng tôi</Typography>
+            <Box className={footer.socialIconContainer}>
+              <CardMedia className={footer.socialIcon} image="/img/fb.png" />
+              <CardMedia
+                className={footer.socialIcon}
+                image="/img/twitter.png"
+              />
+            </Box>
+          </Box>
+          <Box className={footer.rightContainer}>
+            <Box className={footer.linkContainer}>
+              <Typography className={footer.navTitle}>Hỗ trợ</Typography>
+              <Link href="/contact" className={footer.navLink}>
+                Liên hệ
+              </Link>
+              <Link href="/faq" className={footer.navLink}>
+                Các câu hỏi thường gặp
+              </Link>
+              <Link href="/terms" className={footer.navLink}>
+                Điều khoản dịch vụ
+              </Link>
+              <Link href="/about" className={footer.navLink}>
+                Về chúng tôi
+              </Link>
+            </Box>
+          </Box>
         </Box>
-      </Box>
-      <Box className={footer.rightContainer}>
-        <Box className={footer.linkContainer}>
-          <Typography className={footer.navTitle}>Hỗ trợ</Typography>
-          <Link href="/contact" className={footer.navLink}>
-            Liên hệ
-          </Link>
-          <Link href="/faq" className={footer.navLink}>
-            Các câu hỏi thường gặp
-          </Link>
-          <Link href="/terms" className={footer.navLink}>
-            Điều khoản dịch vụ
-          </Link>
-          <Link href="/about" className={footer.navLink}>
-            Về chúng tôi
-          </Link>
-        </Box>
-      </Box>
-    </Box>
+      </footer>
+    </React.Fragment>
   );
 };
 

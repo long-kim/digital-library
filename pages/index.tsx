@@ -70,7 +70,7 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
           <Copyright />
         </Box>
       </Container>
-      <Footer />
+      {/* <Footer></Footer> */}
     </React.Fragment>
   );
 };
