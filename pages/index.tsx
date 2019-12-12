@@ -236,7 +236,7 @@ const Index: NextPage<IHomeProps> = ({ pathname, books }) => {
 };
 
 Index.getInitialProps = async ctx => {
-  // Mock data
+  // TODO pull in actual data
   const products = [
     { name: 'Percy Jackson book', img: '/img/book1.jpg', id: 1 },
     { name: 'Percy Jackson book', img: '/img/book2.jpg', id: 2 },
