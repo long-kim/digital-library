@@ -237,16 +237,48 @@ const Index: NextPage<IHomeProps> = ({ pathname, books }) => {
 };
 
 Index.getInitialProps = async ctx => {
-  // TODO pull in actual data
+  // TODO: pull in actual data
   const products = [
-    { name: 'Percy Jackson book', img: '/img/book1.jpg', id: 1 },
-    { name: 'Percy Jackson book', img: '/img/book2.jpg', id: 2 },
-    { name: 'Percy Jackson book', img: '/img/book3.jpg', id: 3 },
-    { name: 'Percy Jackson book', img: '/img/book4.jpeg', id: 4 },
-    { name: 'Percy Jackson book', img: '/img/book5.jpeg', id: 5 },
-    { name: 'Percy Jackson book', img: '/img/book6.jpg', id: 6 },
-    { name: 'Percy Jackson book', img: '/img/book7.jpg', id: 7 },
-    { name: 'Percy Jackson book', img: '/img/book8.jpg', id: 8 },
+    {
+      name: 'Percy Jackson book',
+      img: '/img/book1.jpg',
+      id: '5BUoT3T1oSZoJbfLq6TH',
+    },
+    {
+      name: 'Percy Jackson book',
+      img: '/img/book2.jpg',
+      id: '5BUoT3T1oSZoJbfLq6TH',
+    },
+    {
+      name: 'Percy Jackson book',
+      img: '/img/book3.jpg',
+      id: '5BUoT3T1oSZoJbfLq6TH',
+    },
+    {
+      name: 'Percy Jackson book',
+      img: '/img/book4.jpeg',
+      id: '5BUoT3T1oSZoJbfLq6TH',
+    },
+    {
+      name: 'Percy Jackson book',
+      img: '/img/book5.jpeg',
+      id: '5BUoT3T1oSZoJbfLq6TH',
+    },
+    {
+      name: 'Percy Jackson book',
+      img: '/img/book6.jpg',
+      id: '5BUoT3T1oSZoJbfLq6TH',
+    },
+    {
+      name: 'Percy Jackson book',
+      img: '/img/book7.jpg',
+      id: '5BUoT3T1oSZoJbfLq6TH',
+    },
+    {
+      name: 'Percy Jackson book',
+      img: '/img/book8.jpg',
+      id: '5BUoT3T1oSZoJbfLq6TH',
+    },
   ];
 
   return {

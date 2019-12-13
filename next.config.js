@@ -32,7 +32,7 @@ module.exports = withPlugins(
     ],
   ],
   {
-    target: 'serverless',
+    target: 'experimental-serverless-trace',
     env: {
       APP_NAME: 'Digital Library',
       FIREBASE_PRIVATE_KEY_ID: process.env.FIREBASE_PRIVATE_KEY_ID,
@@ -40,19 +40,3 @@ module.exports = withPlugins(
     },
   },
 );
-
-// module.exports = withCSS({
-//     webpack: function(config) {
-//         config.module.rules.push({
-//             test: /\.(eot|woff|woff2|ttf|svg|png|jpg|gif)$/,
-//             use: {
-//                 loader: 'url-loader',
-//                 options: {
-//                     limit: 100000,
-//                     name: '[name].[ext]'
-//                 }
-//             }
-//         })
-//         return config
-//     }
-// })
