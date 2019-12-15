@@ -65,6 +65,7 @@ const useStyles = makeStyles(() =>
       backgroundColor: '#8d8585',
       color: '#ffffff',
       fontSize: '14px',
+      marginLeft: "0.5rem"
     },
     cartMiss: {
       margin: '55px 0 31px 73px',
@@ -106,7 +107,7 @@ function createData(
 }
 
 const rows = [
-  createData(1, 'Harry Potter and The Goblet of Fire', 'Thịnh - 808', '5 ngày'),
+  createData(1, 'Harry Potter và Hội Phượng Hoàng', 'Thịnh - 808', '5 ngày'),
   createData(2, 'Percy Jackson and The lightning thef', 'An - 301', '2 ngày'),
   // createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
   // createData('Eclair', 262, 16.0, 24, 6.0),
@@ -135,13 +136,13 @@ const CheckOut: React.FC<IProps> = () => {
               {/* <StyledTableCell>Dessert (100g serving)</StyledTableCell> */}
               <StyledTableCell align="center">STT</StyledTableCell>
               <StyledTableCell align="center">
-                Tên sách&nbsp;(g)
+                Tên sách&nbsp;
               </StyledTableCell>
               <StyledTableCell align="center">
-                Người cho mượn&nbsp;(g)
+                Người cho mượn&nbsp;
               </StyledTableCell>
               <StyledTableCell align="center">
-                Thời gian cho mượn&nbsp;(g)
+                Thời gian cho mượn&nbsp;
               </StyledTableCell>
             </StyledTableRow>
           </TableHead>

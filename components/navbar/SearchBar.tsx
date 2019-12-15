@@ -31,17 +31,24 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const SearchBar: React.FC = () => {
+  // function _onSubmit(){
+  //   window.location("/search");
+  // }
+
   const classes = useStyles();
 
   return (
     <div className={classes.search}>
-      <InputBase
-        placeholder="Tìm kiếm..."
-        classes={{
-          root: classes.inputRoot,
-          input: classes.inputInput,
-        }}
-      />
+      <form action="/search">
+        <InputBase
+          // onSubmit={_onSubmit}
+          placeholder="Tìm kiếm..."
+          classes={{
+            root: classes.inputRoot,
+            input: classes.inputInput,
+          }}
+        />
+      </form>
     </div>
   );
 };

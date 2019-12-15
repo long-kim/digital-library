@@ -5,6 +5,7 @@ import {
   ListItemAvatar,
   ListItemSecondaryAction,
   ListItemText,
+  Link
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import React from 'react';
@@ -27,12 +28,14 @@ const BorrowItem: React.FC<IBorrowItemProps> = ({ user }) => {
 
   return (
     <ListItem classes={{ root: classes.root }}>
-      <ListItemAvatar>
-        <Avatar src={user.imageURL} />
-      </ListItemAvatar>
+      <Link href="/profile">
+        <ListItemAvatar>
+          <Avatar src={user.imageURL} />
+        </ListItemAvatar>
+      </Link>
       <ListItemText primary={user.name} secondary="Gold Member" />
       <ListItemSecondaryAction>
-        <Button color="primary">Hỏi mượn</Button>
+        <Button href="/checkout" color="primary">Hỏi mượn</Button>
       </ListItemSecondaryAction>
     </ListItem>
   );

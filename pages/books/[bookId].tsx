@@ -54,39 +54,39 @@ const reviews: IReviewProps[] = [
 
 const relatedList: IRelatedBookProps[] = [
   {
-    name: 'Conan',
+    name: 'Harry Potter và Hòn Đá Phù Thuỷ',
     coverURL:
-      'https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg',
+      '/img/book1.jpg',
     id: '5BUoT3T1oSZoJbfLq6TH',
   },
   {
-    name: 'Conan',
+    name: 'Harry Potter và Đứa Trẻ Nguyền Rủa',
     coverURL:
-      'https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg',
+      '/img/book2.jpg',
     id: '5BUoT3T1oSZoJbfLq6TH',
   },
   {
-    name: 'Conan',
+    name: 'Harry Potter và Nhà Ngục Akazaban',
     coverURL:
-      'https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg',
+      '/img/book3.jpg',
     id: '5BUoT3T1oSZoJbfLq6TH',
   },
   {
-    name: 'Conan',
+    name: 'Harry Potter và Phòng Chứa Bí Mật',
     coverURL:
-      'https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg',
+      '/img/book4.jpeg',
     id: '5BUoT3T1oSZoJbfLq6TH',
   },
   {
-    name: 'Conan',
+    name: 'Harry Potter và Tử Thần Thực Tử',
     coverURL:
-      'https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg',
+      '/img/book5.jpeg',
     id: '5BUoT3T1oSZoJbfLq6TH',
   },
   {
-    name: 'Conan',
+    name: 'Harry Potter và Chiếc Cốc Lửa',
     coverURL:
-      'https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg',
+      '/img/book6.jpg',
     id: '5BUoT3T1oSZoJbfLq6TH',
   },
 ];

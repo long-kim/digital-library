@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     addToCartButton: {
       width: '100%',
-      backgroundColor: fade(theme.palette.common.black, 0.4),
-      color: '#bcb6b6',
+      backgroundColor: fade(theme.palette.common.black, 0.7),
+      color: '#fefefe',
       borderBottomLeftRadius: theme.shape.borderRadius,
       borderBottomRightRadius: theme.shape.borderRadius,
     },

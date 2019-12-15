@@ -185,32 +185,32 @@ const relatedList = [
 
 const list = [
   {
-    fullname: 'Jim Tran',
+    fullname: 'Thinh Tran',
     uid: 'abcxyz',
     bid: '12345',
   },
   {
-    fullname: 'Jim Tran',
+    fullname: 'Thinh Tran',
     uid: 'abcxyz',
     bid: '12345',
   },
   {
-    fullname: 'Jim Tran',
+    fullname: 'Thinh Tran',
     uid: 'abcxyz',
     bid: '12345',
   },
   {
-    fullname: 'Jim Tran',
+    fullname: 'Thinh Tran',
     uid: 'abcxyz',
     bid: '12345',
   },
   {
-    fullname: 'Jim Tran',
+    fullname: 'Thinh Tran',
     uid: 'abcxyz',
     bid: '12345',
   },
   {
-    fullname: 'Jim Tran',
+    fullname: 'Thinh Tran',
     uid: 'abcxyz',
     bid: '12345',
   },
@@ -243,7 +243,7 @@ const BookDetails: NextPage<IHomeProps> = ({ pathname }) => {
         <div className={classes.detail}>
           <div>
             <div className={classes.book_name}>
-              Harry Potter: và chiếc cốc lửa
+              Harry Potter và Hội Phượng Hoàng
             </div>
             <p>J.K. Rowling</p>
             <div className={classes.rating}>

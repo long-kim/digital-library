@@ -4,32 +4,32 @@ import BorrowModal from '../components/modal/BorrowModal';
 
 const list = [
   {
-    fullname: 'Jim Tran',
+    fullname: 'Thinh Tran',
     uid: 'abcxyz',
     bid: '12345',
   },
   {
-    fullname: 'Jim Tran',
+    fullname: 'Thinh Tran',
     uid: 'abcxyz',
     bid: '12345',
   },
   {
-    fullname: 'Jim Tran',
+    fullname: 'Thinh Tran',
     uid: 'abcxyz',
     bid: '12345',
   },
   {
-    fullname: 'Jim Tran',
+    fullname: 'Thinh Tran',
     uid: 'abcxyz',
     bid: '12345',
   },
   {
-    fullname: 'Jim Tran',
+    fullname: 'Thinh Tran',
     uid: 'abcxyz',
     bid: '12345',
   },
   {
-    fullname: 'Jim Tran',
+    fullname: 'Thinh Tran',
     uid: 'abcxyz',
     bid: '12345',
   },

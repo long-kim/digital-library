@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     bookTitle: {
-      fontWeight: 'bold',
+      height: "4rem",
     },
     addToCartButton: {
       borderColor: '#e2e2e2',
@@ -141,7 +141,7 @@ const BookItem: React.FC<IBookItemProps> = ({ product: { name, img, id } }) => {
           </NextLink>
         </Grid>
         <Grid item>
-          <Typography variant="h6" gutterBottom>
+          <Typography className={classes.bookTitle} variant="h6" gutterBottom align="center">
             {name}
           </Typography>
         </Grid>
@@ -240,8 +240,8 @@ Index.getInitialProps = async ctx => {
   // TODO: pull in actual data
   const products = [
     {
-      name: 'Percy Jackson book',
-      img: '/img/book1.jpg',
+      name: 'Harry Potter và Hội Phượng Hoàng',
+      img: 'https://salt.tikicdn.com/cache/550x550/media/catalog/product/i/m/img005_14.jpg',
       id: '5BUoT3T1oSZoJbfLq6TH',
     },
     {

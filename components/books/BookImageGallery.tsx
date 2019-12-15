@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
     mainImg: {
       height: '100%',
       width: '100%',
-      objectFit: 'cover',
+      objectFit: 'contain',
       borderRadius: theme.shape.borderRadius,
       boxShadow: theme.shadows[3],
     },
@@ -43,7 +43,7 @@ const BookImageGallery: React.FC = () => {
       <Grid className={classes.mainImgWrapper} item md={8}>
         <img
           className={classes.mainImg}
-          src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
+          src="https://salt.tikicdn.com/cache/550x550/media/catalog/product/i/m/img005_14.jpg"
         />
       </Grid>
       <Grid
@@ -57,19 +57,19 @@ const BookImageGallery: React.FC = () => {
         <Grid item>
           <img
             className={classes.sideImg}
-            src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
+            src="https://vcdn.tikicdn.com/ts/review/d5/bf/39/4c7096d12cda96b026b776d561ca67f8.jpg"
           />
         </Grid>
         <Grid item>
           <img
             className={classes.sideImg}
-            src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
+            src="https://vcdn.tikicdn.com/ts/review/4a/17/ef/163b9a6f6bd8815ffb9354ed946e9a31.jpg"
           />
         </Grid>
         <Grid item>
           <img
             className={classes.sideImg}
-            src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
+            src="https://vcdn.tikicdn.com/ts/review/d5/bf/39/4c7096d12cda96b026b776d561ca67f8.jpg"
           />
         </Grid>
       </Grid>

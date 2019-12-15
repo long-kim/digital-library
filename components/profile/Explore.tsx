@@ -25,11 +25,11 @@ const Explore = () => {
     const classes = useStyles();
     var mock_data = [
         {
-            image_url: "https://images-na.ssl-images-amazon.com/images/I/91-PEqHPZbL._SY445_.jpg",
+            image_url: "/img/book1.jpg",
             name: "Percy Jackson"
         },
         {
-            image_url: "https://images-na.ssl-images-amazon.com/images/I/91-PEqHPZbL._SY445_.jpg",
+            image_url: "/img/book2.jpg",
             name: "Percy Jackson"
         },
         {

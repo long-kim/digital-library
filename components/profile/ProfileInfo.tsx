@@ -131,7 +131,7 @@ const ProfileInfo: NextPage<propsTypes> = props => {
     },
     {
       icon: <MenuBookRoundedIcon className={classes.icon} />,
-      name: 'Sách của tôi',
+      name: 'Sách của Thinh',
     },
     {
       icon: <LocalLibraryRoundedIcon className={classes.icon} />,

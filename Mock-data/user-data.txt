@@ -3,7 +3,7 @@ export default user = {
     avatar_url: "",
     username: "nhuvo",
     full_name: "Sarah Vo",
-    user_points: 1003,
+    user_points: 808,
     review: 30,
     friends: [{
             uid: "111",
