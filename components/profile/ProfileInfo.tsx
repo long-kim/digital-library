@@ -94,10 +94,16 @@ interface book {
   status: string;
 }
 const ProfileInfo: NextPage<propsTypes> = props => {
+  function _onClick(index: number){
+    return (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+      e.preventDefault();
+      switchContent(index);
+    };
+  }
   const classes = useStyles();
   const { menuIndex, switchContent, userInfo } = props;
 
-  let user_book_figure = [
+  const userBookFigure = [
     {
       name: 'Cho mượn',
       figure: userInfo.own_books.filter(
@@ -114,7 +120,7 @@ const ProfileInfo: NextPage<propsTypes> = props => {
     },
   ];
 
-  let user_menu = [
+  const userMenu = [
     {
       icon: <PeopleAltIcon className={classes.icon} />,
       name: 'Bạn bè',
@@ -153,7 +159,7 @@ const ProfileInfo: NextPage<propsTypes> = props => {
         justifyContent="space-around"
         className={classes.figureContainer}
       >
-        {user_book_figure.map((figure, index) => {
+        {userBookFigure.map((figure, index) => {
           return (
             <Box
               key={index}
@@ -171,14 +177,11 @@ const ProfileInfo: NextPage<propsTypes> = props => {
       </Box>
       <Divider className={classes.divider} />
       <Box className={classes.menuContainer}>
-        {user_menu.map((item, index) => (
+        {userMenu.map((item, index) => (
           <Link
             key={index}
             href="#"
-            onClick={(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-              e.preventDefault();
-              switchContent(index);
-            }}
+            onClick={_onClick(index)}
             className={classes.link}
           >
             <Box
@@ -188,7 +191,7 @@ const ProfileInfo: NextPage<propsTypes> = props => {
               alignItems="center"
             >
               {item.icon}
-              {index == menuIndex ? (
+              {index === menuIndex ? (
                 <Typography className={classes.menuItemActive}>
                   {item.name}
                 </Typography>
