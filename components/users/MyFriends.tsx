@@ -65,7 +65,7 @@ const FriendItem: React.FC<IFriendItemProps> = ({ friend }) => {
 };
 
 interface IMyFriendsProps {
-  profileData: firebase.firestore.DocumentData | null;
+  profileData?: firebase.firestore.DocumentData | null;
   friends: Array<firebase.firestore.DocumentData | undefined> | undefined;
 }
 

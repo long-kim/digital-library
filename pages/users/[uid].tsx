@@ -10,8 +10,6 @@ import ProfileInfo from '../../components/users/ProfileInfo';
 import { firebaseConfig } from '../../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
-let profileData: firebase.firestore.DocumentData;
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -37,9 +35,13 @@ interface ITabPanelProps {
 const TabPanel: React.FC<ITabPanelProps> = ({ index, value, children }) => {
   const classes = useStyles();
   return (
-    <Grid container className={classes.tabPanel}>
-      {value === index && children}
-    </Grid>
+    <React.Fragment>
+      {value === index && (
+        <Grid container className={classes.tabPanel}>
+          {children}
+        </Grid>
+      )}
+    </React.Fragment>
   );
 };
 
@@ -52,8 +54,8 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid }) => {
   const [user, handleLogin, handleLogout] = useFirebaseAuth(firebaseConfig);
   const [tab, setTab] = useState(0);
   const [
-    profileObj,
-    setProfileObj,
+    profileData,
+    setProfileData,
   ] = useState<firebase.firestore.DocumentData | null>(null);
   const [friends, setFriends] = useState<
     Array<firebase.firestore.DocumentData | undefined>
@@ -74,9 +76,9 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid }) => {
         .where('uid', '==', uid as string)
         .get();
 
-      const [fbProfile] = userSnapshot.docs;
+      const [firebaseProfile] = userSnapshot.docs;
 
-      setProfileObj(fbProfile.data());
+      setProfileData(firebaseProfile.data());
     };
     getProfile();
   }, [uid]);
@@ -95,7 +97,7 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid }) => {
         }
       }),
     ]).then(newFriends => setFriends(newFriends));
-  }, [profileObj]);
+  }, [profileData]);
 
   return (
     <React.Fragment>
@@ -107,7 +109,7 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid }) => {
           </Grid>
           <Grid item xs={12} md={8}>
             <TabPanel value={tab} index={0}>
-              <MyFriends profileData={profileObj} friends={friends} />
+              <MyFriends friends={friends} />
             </TabPanel>
             <TabPanel value={tab} index={1}>
               abc2
@@ -134,7 +136,7 @@ Profile.getInitialProps = async ({ query }) => {
 
   const [profile] = userSnapshot.docs;
 
-  profileData = profile.data();
+  const profileData = profile.data();
 
   return {
     uid: uid as string,
