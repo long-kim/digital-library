@@ -6,10 +6,10 @@ import {
   Typography,
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import 'slick-carousel/slick/slick-theme.css';
+import 'slick-carousel/slick/slick.css';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -29,32 +29,42 @@ const useStyles = makeStyles(theme =>
       },
     },
     avatar: {
-      width: '11.5rem',
-      height: '11.5rem',
-      marginBottom: theme.spacing(2),
+      height: 300,
+      width: '100%',
+      marginBottom: theme.spacing(3),
       boxShadow: theme.shadows[2],
     },
+    slides: {},
   }),
 );
 
-interface IFriendItemProps {
-  friend: firebase.firestore.DocumentData | undefined;
+export interface Book {
+  id: string;
+  data: firebase.firestore.DocumentData | undefined;
 }
 
-const FriendItem: React.FC<IFriendItemProps> = ({ friend }) => {
+interface IBookItemProps {
+  book: Book | undefined;
+}
+
+const BookItem: React.FC<IBookItemProps> = ({ book }) => {
   const classes = useStyles();
 
   return (
     <React.Fragment>
-      {friend && (
-        <Link href="/users/[uid]" as={`/users/${friend.uid}`} passHref>
+      {book && (
+        <Link href="/books/[bookId]" as={`/books/${book.id}`} passHref>
           <ButtonBase className={classes.buttonBase}>
             <Grid container direction="column" alignItems="center">
               <Grid item>
-                <Avatar className={classes.avatar} src={friend.photoURL} />
+                <Avatar
+                  className={classes.avatar}
+                  src={book.data?.img[0]}
+                  variant="rounded"
+                />
               </Grid>
               <Grid item>
-                <Typography variant="h6">{friend.fullName}</Typography>
+                <Typography variant="h6" align="center">{book.data?.name}</Typography>
               </Grid>
             </Grid>
           </ButtonBase>
@@ -64,31 +74,29 @@ const FriendItem: React.FC<IFriendItemProps> = ({ friend }) => {
   );
 };
 
-interface IMyFriendsProps {
-  profileData?: firebase.firestore.DocumentData | null;
-  friends: Array<firebase.firestore.DocumentData | undefined> | undefined;
-  setFriends?: (
-    friends: Array<firebase.firestore.DocumentData | undefined> | undefined,
-  ) => void;
+interface IMyBooksProps {
+  books: Array<Book | undefined> | undefined;
 }
 
-const MyFriends: React.FC<IMyFriendsProps> = ({ friends }) => {
+const MyBooks: React.FC<IMyBooksProps> = ({ books }) => {
   const classes = useStyles();
 
   return (
     <Grid className={classes.root} container direction="column">
       <Grid item>
         <Typography className={classes.title} variant="h4" gutterBottom>
-          Bạn bè
+          Sách của tôi
         </Typography>
       </Grid>
       <Grid item container spacing={4} style={{ flexGrow: 1 }}>
-        {friends ? (
-          friends.map((friend, idx) => (
-            <Grid key={idx} item xs={6} lg={4}>
-              <FriendItem friend={friend} />
-            </Grid>
-          ))
+        {books ? (
+          <React.Fragment>
+            {books.map((book, idx) => (
+              <Grid key={idx} item xs={6} md={4}>
+                <BookItem book={book} />
+              </Grid>
+            ))}
+          </React.Fragment>
         ) : (
           <Grid item container justify="center" alignItems="center">
             <CircularProgress size="3rem" />
@@ -99,4 +107,4 @@ const MyFriends: React.FC<IMyFriendsProps> = ({ friends }) => {
   );
 };
 
-export default MyFriends;
+export default MyBooks;

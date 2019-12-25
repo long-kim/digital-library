@@ -1,8 +1,10 @@
 import { Avatar, IconButton, Menu, MenuItem } from '@material-ui/core';
+import { MenuItemProps } from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import firebase from 'firebase/app';
-import Link from 'next/link';
+import Link, { LinkProps } from 'next/link';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
 const useStyles = makeStyles(theme =>
@@ -27,10 +29,15 @@ const UserPopupMenu: React.FC<IUserPopupMenuProps> = ({
   handleLogout,
   user,
 }) => {
+  const router = useRouter();
+
   const handleLogoutClick = () => {
     handleLogout();
     handleClose();
   };
+
+  const handleProfileClick = () =>
+    router.push('/users/[uid]', `/users/${user.uid}`);
 
   return (
     <Menu
@@ -41,9 +48,7 @@ const UserPopupMenu: React.FC<IUserPopupMenuProps> = ({
       transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       getContentAnchorEl={null}
     >
-      <Link href="/users/[uid]" as={`/users/${user.uid}`} passHref>
-        <MenuItem>Trang của tôi</MenuItem>
-      </Link>
+      <MenuItem onClick={handleProfileClick}>Trang của tôi</MenuItem>
       <MenuItem onClick={handleLogoutClick}>Đăng xuất</MenuItem>
     </Menu>
   );

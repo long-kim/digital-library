@@ -17,7 +17,8 @@
     "variable-name": [true, "allow-leading-underscore", "allow-pascal-case"],
     "jsx-no-multiline-js": [false],
     "jsx-boolean-value": [false],
-    "jsx-wrap-multiline": [false]
+    "jsx-wrap-multiline": [false],
+    "no-console": [false]
   },
   "rulesDirectory": []
 }
