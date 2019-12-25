@@ -3,14 +3,20 @@ import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const addBook = (req: NextApiRequest, res: NextApiResponse) => {
+const addBook = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!req.body) {
         res.status(400).json({ status: false, message: 'Bad Request' });
     }
 
-    // firebase.firestore().collection('books').
+    const data = req.body;
+    const blob = await fetch(data.img[0]).then(r => r.blob());
 
-    res.json({ message: 'add' });
+    console.log(blob);
+
+    let storageRef = firebase.storage().ref();
+    // firebase.firestore().collection('books').
+    res.json(req.body);
+    // res.json({ message: 'add' });
 };
 
 export default addBook;

@@ -10,17 +10,15 @@ import {
   Chip,
   Typography,
   FormControl,
-  InputLabel,
-  Input,
   Checkbox,
   ListItemText,
-  Fab,
-  CardMedia,
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import useFirebaseAuth from './hooks/useFirebaseAuth';
 import { firebaseConfig } from '../firebase/config';
 import Navbar from '../components/navbar/Navbar';
+
+const PUBLIC_URL = 'http://localhost:4000/api/add-book';
 
 const categories = [
   'Tiểu thuyết',
@@ -41,6 +39,10 @@ const MenuProps = {
       width: 250,
     },
   },
+};
+
+const textareaProps = {
+  maxlength: 200
 };
 
 const useStyles = makeStyles(() =>
@@ -137,16 +139,30 @@ const AddBook: React.FC = () => {
     // console.log(images);
   }
 
-  const handleSubmit = () => {
-    if (isValidated) {
+  const handleSubmit = async () => {
+    if (!isValidated) {
       const data = JSON.stringify({
         user: user?.uid,
-        bookName: bookName,
+        name: bookName,
         author: author,
-        description: description,
-        category: categorySelect,
-        images: images
-      })
+        overview: description,
+        cate: categorySelect,
+        img: images
+      });
+
+      // console.log(PUBLIC_URL);
+
+      const response = await fetch(PUBLIC_URL, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: data
+      });
+
+      const res = await response.json();
+      console.log(res);
 
     }
   }
@@ -189,6 +205,8 @@ const AddBook: React.FC = () => {
                   className={classes.input}
                   value={bookName}
                   onChange={(event) => {setBookName(event.target.value)}}
+                  inputProps={{maxlength: 150}}
+
                 />
               </FormControl>
               <FormControl className={classes.form_control}>
@@ -202,6 +220,8 @@ const AddBook: React.FC = () => {
                   value={author}
                   onChange={(event) => {setAuthor(event.target.value)}}
                   required
+                  inputProps={{maxlength: 100}}
+
                 />
               </FormControl>
               <FormControl className={classes.form_control}>
@@ -215,6 +235,7 @@ const AddBook: React.FC = () => {
                   value={description}
                   onChange={(event) => {setDescription(event.target.value)}}
                   required
+                  inputProps={{maxlength: 750}}
                 />
               </FormControl>
               <FormControl className={classes.form_control}>
