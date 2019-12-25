@@ -5,7 +5,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { NextPage } from 'next';
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import BookDetails from '../../components/books/BookDetails';
 import BookImageGallery from '../../components/books/BookImageGallery';
 import BorrowModal from '../../components/books/BorrowModal';
@@ -19,38 +19,38 @@ import Navbar from '../../components/navbar/Navbar';
 import { firebaseConfig } from '../../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
-const reviews: IReviewProps[] = [
-  {
-    user: {
-      name: 'Thinh Tran',
-      imageURL:
-        'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-    },
-    review:
-      'However, they commented that it did tend to lag, especially at the end where two bad guys',
-    rating: 4,
-  },
-  {
-    user: {
-      name: 'Thinh Tran',
-      imageURL:
-        'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-    },
-    review:
-      'However, they commented that it did tend to lag, especially at the end where two bad guys',
-    rating: 4,
-  },
-  {
-    user: {
-      name: 'Thinh Tran',
-      imageURL:
-        'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-    },
-    review:
-      'However, they commented that it did tend to lag, especially at the end where two bad guys',
-    rating: 4,
-  },
-];
+// const reviews: IReviewProps[] = [
+//   {
+//     user: {
+//       name: 'Thinh Tran',
+//       imageURL:
+//         'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
+//     },
+//     review:
+//       'However, they commented that it did tend to lag, especially at the end where two bad guys',
+//     rating: 4,
+//   },
+//   {
+//     user: {
+//       name: 'Thinh Tran',
+//       imageURL:
+//         'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
+//     },
+//     review:
+//       'However, they commented that it did tend to lag, especially at the end where two bad guys',
+//     rating: 4,
+//   },
+//   {
+//     user: {
+//       name: 'Thinh Tran',
+//       imageURL:
+//         'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
+//     },
+//     review:
+//       'However, they commented that it did tend to lag, especially at the end where two bad guys',
+//     rating: 4,
+//   },
+// ];
 
 const relatedList: IRelatedBookProps[] = [
   {
@@ -116,12 +116,44 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface IBookShowProps {
   book?: IBook | undefined;
+  bookId?: string;
 }
 
-const BookShow: NextPage<IBookShowProps> = ({ book }) => {
+const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
   const [user, _, handleLogout] = useFirebaseAuth(firebaseConfig);
   const [modalOpen, setModalOpen] = useState(false);
+  const [reviews, setReviews] = useState<IReviewProps[]>([]);
   const classes = useStyles();
+
+  useEffect(() => {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    const db = firebase.firestore();
+    db.collection('books')
+      .doc(bookId as string)
+      .get()
+      .then(bookDocumentSnapshot => bookDocumentSnapshot.data())
+      .then(bookData => {
+        const reviewRefs: firebase.firestore.DocumentReference[] | undefined =
+          bookData?.reviews;
+        let reviewData: any;
+
+        return Promise.all([
+          ...(reviewRefs ?? []).map(reviewRef =>
+            reviewRef
+              .get()
+              .then(snapshot => snapshot.data())
+              .then(data => {
+                reviewData = data;
+                return data?.user.get();
+              })
+              .then(reviewer => ({ ...reviewData, user: reviewer.data() })),
+          ),
+        ]).then(reviews => setReviews(reviews));
+      });
+  }, []);
 
   const handleClickOpen = () => setModalOpen(true);
 
@@ -164,9 +196,9 @@ const BookShow: NextPage<IBookShowProps> = ({ book }) => {
             <Grid item>
               <CommentForm />
             </Grid>
-            {reviews.map(({ user: reviewUser, rating, review }, idx) => (
+            {reviews.map(({ user: reviewUser, rating, content }, idx) => (
               <Grid key={idx} item>
-                <Review user={reviewUser} rating={rating} review={review} />
+                <Review user={reviewUser} rating={rating} content={content} />
               </Grid>
             ))}
           </Grid>
@@ -206,9 +238,9 @@ BookShow.getInitialProps = async ({ query }) => {
     .doc(bookId as string)
     .get();
 
-  const book = bookSnapshot.data() as IBook;
+  const { reviews, ...book } = bookSnapshot.data() as IBook;
 
-  return { book };
+  return { book, bookId: bookId as string };
 };
 
 export default BookShow;

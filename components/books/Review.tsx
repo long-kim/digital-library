@@ -2,6 +2,7 @@ import { Avatar, Grid, Theme, Typography } from '@material-ui/core';
 import { Rating } from '@material-ui/lab';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import React from 'react';
+import Link from '../Link';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,30 +31,32 @@ interface User {
 }
 
 export interface IReviewProps {
-  user: User;
-  review: string;
+  user: firebase.firestore.DocumentData;
+  content: string;
   rating: number;
 }
 
-const Review: React.FC<IReviewProps> = ({ user, rating, review }) => {
+const Review: React.FC<IReviewProps> = ({ user, rating, content }) => {
   const classes = useStyles();
 
   return (
     <Grid className={classes.root} container direction="column">
       <Grid item container direction="row">
         <Grid item>
-          <Avatar className={classes.avatar} src={user.imageURL} />
+          <Avatar className={classes.avatar} src={user.photoURL} />
         </Grid>
         <Grid item>
           <Grid item>
-            <Typography variant="h6">{user.name}</Typography>
+            <Link href="/users/[uid]" as={`/users/${user.uid}`}>
+              <Typography variant="h6">{user.fullName}</Typography>
+            </Link>
             <Rating readOnly value={rating} size="small" />
           </Grid>
         </Grid>
       </Grid>
       <Grid item>
         <Typography className={classes.review} variant="body1" align="justify">
-          {review}
+          {content}
         </Typography>
       </Grid>
     </Grid>

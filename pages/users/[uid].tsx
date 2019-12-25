@@ -8,12 +8,13 @@ import Error from 'next/error';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 import Navbar from '../../components/navbar/Navbar';
-import MyBooks, { Book } from '../../components/users/MyBooks';
+import { Book } from '../../components/users/MyBooks';
 import ProfileInfo from '../../components/users/ProfileInfo';
 import { firebaseConfig } from '../../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
 const MyFriends = dynamic(() => import('../../components/users/MyFriends'));
+const MyBooks = dynamic(() => import('../../components/users/MyBooks'));
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
