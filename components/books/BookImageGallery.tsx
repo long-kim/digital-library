@@ -1,6 +1,7 @@
-import { Grid, Theme } from '@material-ui/core';
+import { ButtonBase, Grid, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
-import React from 'react';
+import React, { useState } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -15,6 +16,7 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100%',
       width: '100%',
       objectFit: 'cover',
+      objectPosition: 'left top',
       borderRadius: theme.shape.borderRadius,
       boxShadow: theme.shadows[3],
     },
@@ -27,24 +29,32 @@ const useStyles = makeStyles((theme: Theme) =>
     sideImg: {
       height: 250,
       width: '100%',
-      objectFit: 'cover',
       borderRadius: theme.shape.borderRadius,
       marginBottom: theme.spacing(2),
       boxShadow: theme.shadows[1],
+      '& img': {
+        borderRadius: theme.shape.borderRadius,
+        objectFit: 'cover',
+        minHeight: '100%',
+      },
     },
   }),
 );
 
-const BookImageGallery: React.FC = () => {
+interface IBookImageGalleryProps {
+  images: string[] | undefined;
+}
+
+const BookImageGallery: React.FC<IBookImageGalleryProps> = ({ images }) => {
   const classes = useStyles();
+  const [currentImage, setCurrentImage] = useState(0);
+
+  const handleImageChange = (index: number) => setCurrentImage(index);
 
   return (
     <Grid className={classes.root} container>
       <Grid className={classes.mainImgWrapper} item md={8}>
-        <img
-          className={classes.mainImg}
-          src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
-        />
+        <img className={classes.mainImg} src={images?.[currentImage]} />
       </Grid>
       <Grid
         className={classes.sidePanel}
@@ -54,7 +64,22 @@ const BookImageGallery: React.FC = () => {
         direction="column"
         alignItems="flex-start"
       >
-        <Grid item>
+        {images?.map((imgURL, idx) => (
+          <Grid key={idx} item container>
+            <ButtonBase
+              className={classes.sideImg}
+              onClick={handleImageChange.bind(null, idx)}
+            >
+              <LazyLoadImage
+                src={imgURL}
+                effect="blur"
+                height="100%"
+                width="100%"
+              />
+            </ButtonBase>
+          </Grid>
+        ))}
+        {/* <Grid item>
           <img
             className={classes.sideImg}
             src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
@@ -71,7 +96,7 @@ const BookImageGallery: React.FC = () => {
             className={classes.sideImg}
             src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
           />
-        </Grid>
+        </Grid> */}
       </Grid>
     </Grid>
   );

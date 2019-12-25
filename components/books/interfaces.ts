@@ -10,4 +10,5 @@ export interface IBook extends firestore.DocumentData {
   author?: string;
   overview?: string;
   rating: number;
+  img: string[];
 }

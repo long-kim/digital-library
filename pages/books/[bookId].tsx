@@ -119,7 +119,7 @@ interface IBookShowProps {
 }
 
 const BookShow: NextPage<IBookShowProps> = ({ book }) => {
-  const [user, , handleLogout] = useFirebaseAuth(firebaseConfig);
+  const [user, _, handleLogout] = useFirebaseAuth(firebaseConfig);
   const [modalOpen, setModalOpen] = useState(false);
   const classes = useStyles();
 
@@ -155,7 +155,7 @@ const BookShow: NextPage<IBookShowProps> = ({ book }) => {
             </Grid>
           </Grid>
           <Grid item xs={6}>
-            <BookImageGallery />
+            <BookImageGallery images={book?.img} />
           </Grid>
         </Grid>
         <Grid item className={classes.linebreak} />
@@ -189,8 +189,6 @@ const BookShow: NextPage<IBookShowProps> = ({ book }) => {
           </Grid>
         </Grid>
       </Container>
-      {/* <BookDetails /> */}
-      {/* <Footer /> */}
     </React.Fragment>
   );
 };
