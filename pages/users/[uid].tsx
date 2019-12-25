@@ -131,7 +131,13 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid, error }) => {
           <Container>
             <Grid container spacing={4}>
               <Grid item xs={12} md={4}>
-                <ProfileInfo tab={tab} setTab={setTab} profile={profile} />
+                <ProfileInfo
+                  tab={tab}
+                  setTab={setTab}
+                  profile={profile}
+                  own={user?.uid === uid}
+                  of={profileData?.fullName}
+                />
               </Grid>
               <Grid item xs={12} md={8}>
                 <TabPanel value={tab} index={0}>
@@ -141,7 +147,11 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid, error }) => {
                   abc
                 </TabPanel>
                 <TabPanel value={tab} index={2}>
-                  <MyBooks books={books} />
+                  <MyBooks
+                    books={books}
+                    own={user?.uid === uid}
+                    of={profileData?.fullName}
+                  />
                 </TabPanel>
               </Grid>
             </Grid>

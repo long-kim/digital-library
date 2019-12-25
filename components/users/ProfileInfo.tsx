@@ -72,7 +72,7 @@ const tabs = [
     icon: <SearchIcon />,
   },
   {
-    label: 'Sách của tôi',
+    label: 'Sách',
     icon: <MenuBookRoundedIcon />,
   },
   {
@@ -121,6 +121,8 @@ interface IProfileInfoProps {
   profile: any;
   tab: number;
   setTab: React.Dispatch<React.SetStateAction<number>>;
+  own?: boolean;
+  of?: string;
 }
 
 const ProfileInfo: React.FC<IProfileInfoProps> = ({ profile, tab, setTab }) => {

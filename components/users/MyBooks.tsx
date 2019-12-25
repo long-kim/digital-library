@@ -64,7 +64,9 @@ const BookItem: React.FC<IBookItemProps> = ({ book }) => {
                 />
               </Grid>
               <Grid item>
-                <Typography variant="h6" align="center">{book.data?.name}</Typography>
+                <Typography variant="h6" align="center">
+                  {book.data?.name}
+                </Typography>
               </Grid>
             </Grid>
           </ButtonBase>
@@ -76,16 +78,18 @@ const BookItem: React.FC<IBookItemProps> = ({ book }) => {
 
 interface IMyBooksProps {
   books: Array<Book | undefined> | undefined;
+  own?: boolean;
+  of?: string;
 }
 
-const MyBooks: React.FC<IMyBooksProps> = ({ books }) => {
+const MyBooks: React.FC<IMyBooksProps> = ({ books, own, of }) => {
   const classes = useStyles();
 
   return (
     <Grid className={classes.root} container direction="column">
       <Grid item>
         <Typography className={classes.title} variant="h4" gutterBottom>
-          Sách của tôi
+          {own ? 'Sách của tôi' : `Sách của ${of}`}
         </Typography>
       </Grid>
       <Grid item container spacing={4} style={{ flexGrow: 1 }}>

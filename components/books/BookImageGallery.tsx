@@ -1,5 +1,6 @@
 import { ButtonBase, Grid, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
+import clsx from 'clsx';
 import React, { useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
@@ -26,6 +27,11 @@ const useStyles = makeStyles((theme: Theme) =>
       flexWrap: 'nowrap',
       paddingRight: theme.spacing(2),
     },
+    active: {
+      '& img': {
+        filter: 'unset !important',
+      },
+    },
     sideImg: {
       height: 250,
       width: '100%',
@@ -36,6 +42,8 @@ const useStyles = makeStyles((theme: Theme) =>
         borderRadius: theme.shape.borderRadius,
         objectFit: 'cover',
         minHeight: '100%',
+        filter: 'brightness(0.6)',
+        transition: theme.transitions.create('filter'),
       },
     },
   }),
@@ -67,8 +75,11 @@ const BookImageGallery: React.FC<IBookImageGalleryProps> = ({ images }) => {
         {images?.map((imgURL, idx) => (
           <Grid key={idx} item container>
             <ButtonBase
-              className={classes.sideImg}
+              className={clsx(classes.sideImg, {
+                [classes.active]: idx === currentImage,
+              })}
               onClick={handleImageChange.bind(null, idx)}
+              disableRipple
             >
               <LazyLoadImage
                 src={imgURL}
@@ -79,24 +90,6 @@ const BookImageGallery: React.FC<IBookImageGalleryProps> = ({ images }) => {
             </ButtonBase>
           </Grid>
         ))}
-        {/* <Grid item>
-          <img
-            className={classes.sideImg}
-            src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
-          />
-        </Grid>
-        <Grid item>
-          <img
-            className={classes.sideImg}
-            src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
-          />
-        </Grid>
-        <Grid item>
-          <img
-            className={classes.sideImg}
-            src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
-          />
-        </Grid> */}
       </Grid>
     </Grid>
   );
