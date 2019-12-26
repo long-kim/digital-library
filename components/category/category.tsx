@@ -6,6 +6,7 @@ import { firebaseConfig } from '../../firebase/config';
 import useFirebaseAuth from '../../pages/hooks/useFirebaseAuth';
 import CateItem from './cateItem';
 import ICate from './ICate';
+import CateItemList from './cateItemList';
 
 interface IHomeProps {
     pathname?: string;
@@ -14,12 +15,16 @@ interface IHomeProps {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     body: {
-        width: "90%",
-        height: '100%',
-        margin: '60px auto',
+        marginTop: '2rem',
         display: 'flex',
         justifyContent: 'space-around',
         flexWrap: 'wrap',
+        alignContent: 'flex-start',
+    },
+    cateWrapper: {
+        width: "90%",
+        minHeight: '100vh',
+        margin: '80px auto',
     }
   }),
 );
@@ -84,8 +89,12 @@ const Category: NextPage<IHomeProps> = ({ pathname }) => {
 
 
     return (
-        <div className={classes.body}>
-            {renderCateList}
+        <div className={classes.cateWrapper}>
+            <h1>Thể loại sách:</h1>
+            <div className={classes.body}>
+                {renderCateList}
+                {/* <CateItemList></CateItemList> */}
+            </div>
         </div>
     );
 }

@@ -155,7 +155,7 @@ const BookShow: NextPage<IBookShowProps> = ({ book }) => {
             </Grid>
           </Grid>
           <Grid item xs={6}>
-            <BookImageGallery />
+            <BookImageGallery book={book}/>
           </Grid>
         </Grid>
         <Grid item className={classes.linebreak} />
