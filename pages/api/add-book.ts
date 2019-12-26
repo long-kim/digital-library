@@ -4,75 +4,100 @@ import { firebaseConfig } from '../../firebase/config';
 import 'firebase/firestore';
 import 'firebase/storage';
 import { NextApiRequest, NextApiResponse } from 'next';
+// import formidable from 'formidable';
 
-import  fetch  from 'isomorphic-unfetch';
+import Busboy from 'busboy';
 
-interface IImage {
-    type: string,
-    url: string,
-}
+const addBook = (req: NextApiRequest, res: NextApiResponse) => {
+    // if (!req.body) {
+    //     res.status(400).json({ status: false, message: 'Bad Request' });
+    //     return;
+    // }
 
-const addBook = async (req: NextApiRequest, res: NextApiResponse) => {
-    if (!req.body) {
-        res.status(400).json({ status: false, message: 'Bad Request' });
-    }
+    // new formidable.IncomingForm().parse(req, async (err, fields, files) => {
+    //     if (err) {
+    //         console.error(err);
+    //     }
 
-    const body = req.body;
+    //     console.log(fields);
+    //     console.log(files);
 
-    // Initialize DB and Storage
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-
-    const db = firebase.firestore();
-    const storageRef = firebase.storage().ref();
-
-    // Get books collection ref
-    const bookRef = db.collection('books').doc();
-
-    // Generate a random ID
-    const id = bookRef.id;
-
-    // Image processing: Convert ObjectURL to Blob or File
-    body.img.forEach((image: IImage, index: number) => {
-        fetch(image.url)
-        .then(r => r.blob())
-        .then(blob => {
-            // bookId/0.ext
-            const pathRef = storageRef.child(`${id}`);
-            const imageRef = pathRef.child(`${index}.${image.type}`);
+    //     // Initialize DB and Storage
+    //     if (!firebase.apps.length) {
+    //         firebase.initializeApp(firebaseConfig);
+    //     }
     
-            console.log(`${index}`);
-            let uploadTask = imageRef.put(blob);
+    //     const db = firebase.firestore();
+    //     const storageRef = firebase.storage().ref();
     
-            console.log(`Uploaded ${id}/${index}.${image.type}`);
-        }).catch(error => {
-            console.error(error);
-        })
+    //     // Get books collection ref
+    //     const bookRef = db.collection('books-test').doc();
+    
+    //     // Generate a random ID
+    //     const id = bookRef.id;
+    
+    //     // Image processing
+    //     // for (let key in files) {
+    //     //     const image = files[key];
 
-    });
+    //     //     const extension = image.name.substring(image.name.lastIndexOf('.') + 1);
 
-    const img = body.img.map((image: IImage, index: number) => {
-        return `${id}/${index}.${image.type}`;
-    });
+    //     //     // bookId/0.ext
+    //     //     const pathRef = storageRef.child(`${id}`);
+    //     //     const imageRef = pathRef.child(`${key}.${extension}`);
+    //     //     console.log(files[key]);
+    //     //     let uploadTask = imageRef.put(image as File);
+    
+    //     //     console.log(`Uploaded ${id}/${key}.${extension}`);
+    //     // }
+    
+    //     let img: string[] = [];
+    //     for (let key in files) {
+    //         const image = files[key];
+    //         const extension = image.name.substring(image.name.lastIndexOf('.') + 1);
+    //         img.concat(`${id}/${key}.${extension}`);
+    //         console.log(img);
+    //     }
+    
+    //     let data = {
+    //         author: fields['author'],
+    //         name: fields['name'],
+    //         overview: fields['overview'],
+    //         cate: JSON.parse(fields['cate'] as string),
+    //         img: img,
+    //         status: 'pending',
+    //         user: fields['user']
+    //     }
+    //     console.log(data);
+    //     // Add to new document to books collections
+    //     let newDoc = await db.collection('books-test').doc(id).set(data);
+    
+    //     res.json({
+    //         id: id,
+    //         data: data
+    //     });
+    // });
 
-    let data = {
-        author: body.author,
-        name: body.name,
-        overview: body.overview,
-        cate: body.cate,
-        img: img,
-        status: 'pending',
-        owner: body.user
-    }
+    // const busboy = new Busboy({headers: req.headers});
 
-    // Add to new document to books collections
-    let newDoc = await db.collection('books').doc(id).set(data);
+    // let formData = {};
+    // busboy.on('field', (fieldname, val) => {
+    //     console.log("REACH");
+    //     formData.fieldname = val;
+    // });
 
-    res.json({
-        id: id,
-        data: data
-    });
+    // busboy.on('finish',() => {
+    //     res.send(formData);
+    // })
+
+    // busboy.end(req.body);
+    
+};
+
+export const config = {
+    api: {
+        bodyParser: false
+    },
 };
 
 export default addBook;
