@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import { Theme } from '@material-ui/core';
+import Link from 'next/link';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -53,13 +54,15 @@ const Book: React.FC<IProps> = ({ key, url, img, name }) => {
         margin: '0 40px',
       }}
     >
-      <a href={url} className={classes.searchSubTitle}>
+      <Link href="/books/[bookId]" as={url} passHref>
+        <div>
         <img src={img} alt={name} className={classes.searchBook} />
         {/* <button className={classes.addToCartBtn}>Thêm vào giỏ</button> */}
         <div>
           <p style={{ marginTop: '0' }}>{name}</p>
         </div>
-      </a>
+        </div>
+      </Link>
     </div>
   );
 };
