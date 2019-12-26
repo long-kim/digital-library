@@ -55,7 +55,7 @@ const Book: React.FC<IProps> = ({ key, url, img, name }) => {
       }}
     >
       <Link href="/books/[bookId]" as={url} passHref>
-        <div>
+        <div style = {{ cursor: "pointer"}} >
         <img src={img} alt={name} className={classes.searchBook} />
         {/* <button className={classes.addToCartBtn}>Thêm vào giỏ</button> */}
         <div>

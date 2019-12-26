@@ -6,10 +6,9 @@ import { IBook } from '../components/books/interfaces';
 
 const useFirebaseSearch: (
   credentials: object,
-) => [
-  IBook[],
-  (keySearch: string) => Promise<void>,
-] = (credentials: object) => {
+) => [IBook[], (keySearch: string) => Promise<void>] = (
+  credentials: object,
+) => {
   const [response, setResponse] = useState<IBook[]>([]);
 
   useEffect(() => {
@@ -36,20 +35,20 @@ const useFirebaseSearch: (
     str = _.lowerCase(str);
     return str;
   };
-  const searchAlgorithm = (data: IBook[], keySearch: string) => {
-    const responseArr: IBook[] = [];
+  const searchAlgorithm = (data: any[], keySearch: string) => {
+    const responseArr: any[] = [];
     const search = preProcess(keySearch);
-    data.forEach((doc) => {
-      if (doc.cate) {
-        const isContained = doc.cate.some((item: string) => {
+    data.forEach(doc => {
+      if (doc.data.cate) {
+        const isContained = doc.data.cate.some((item: string) => {
           return search.includes(preProcess(item));
         });
         if (isContained) {
           return responseArr.push(doc);
         }
       }
-      if (doc.name) {
-        const name = preProcess(doc.name);
+      if (doc.data.name) {
+        const name = preProcess(doc.data.name);
         const isContained = name.includes(search);
         if (isContained) {
           return responseArr.push(doc);
@@ -58,24 +57,25 @@ const useFirebaseSearch: (
     });
     return responseArr;
   };
-  const handleSearch = async (
-    keySearch: string,
-  ) => {
+  const handleSearch = async (keySearch: string) => {
     try {
       const responseFromFirebase = await firebase
         .firestore()
         .collection('books')
         .get();
 
-      const parseDocs: IBook[] = [];
-      responseFromFirebase.forEach( doc => {
-        parseDocs.push(doc.data() as IBook);
+      const parseDocs: any[] = [];
+      responseFromFirebase.forEach(doc => {
+        parseDocs.push({
+          data: doc.data(),
+          id: doc.id
+        });
       });
       // console.log(parseDocs);
-      const result: IBook[] = searchAlgorithm(parseDocs, keySearch);
+      const result: any[] = searchAlgorithm(parseDocs, keySearch);
       // console.log(result);
       setResponse(result);
-    } catch ( e ) {
+    } catch (e) {
       setResponse([]);
     }
   };

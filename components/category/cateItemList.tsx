@@ -20,14 +20,22 @@ const useStyles = makeStyles((theme: Theme) =>
     big_body: {
         width: "90%",
         minHeight: '100vh',
-        margin: '40px auto',
+        margin: '0 auto',
     },
     body: {
-        width: '1400px',
         margin: '1.5rem auto 0',
         display: 'flex',
         justifyContent: 'flex-start',
         flexWrap: 'wrap',
+        [theme.breakpoints.down('md')]: {
+            width: '100%',
+          },
+          [theme.breakpoints.up('lg')]: {
+            width: '1120px',
+          },
+          [theme.breakpoints.up('xl')]: {
+            width: '1400px',
+          },
     }
   }),
 );

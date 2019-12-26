@@ -12,9 +12,9 @@ import useFirebaseSearch from '../hooks/useFirebaseSearch';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     searchTitle: {
-      margin: '50px 20px 30px 73px',
-      fontSize: '30px',
-      fontStyle: 'italic',
+      margin: '0px 20px 30px 73px',
+      fontSize: '24px',
+     
     },
     searchKetqua: {
       color: '#929292',
@@ -45,32 +45,32 @@ const useStyles = makeStyles((theme: Theme) =>
     big_body: {
       width: '90%',
       minHeight: '100vh',
-      margin: '40px auto',
+      margin: '20px auto',
     },
     body: {
-        margin: '1.5rem auto 0',
-        display: 'flex',
-        justifyContent: 'flex-start',
-        flexWrap: 'wrap',
+      margin: '1.5rem auto 0',
+      display: 'flex',
+      justifyContent: 'flex-start',
+      flexWrap: 'wrap',
 
-        [theme.breakpoints.down('md')]: {
-          width: '100%',
-        },
-        [theme.breakpoints.up('lg')]: {
-          width: '1120px',
-        },
-        [theme.breakpoints.up('xl')]: {
-          width: '1400px',
-        },
+      [theme.breakpoints.down('md')]: {
+        width: '100%',
+      },
+      [theme.breakpoints.up('lg')]: {
+        width: '1120px',
+      },
+      [theme.breakpoints.up('xl')]: {
+        width: '1400px',
+      },
     },
   }),
 );
 
 interface IProps {
-  keySearch?: string ;
+  keySearch?: string;
 }
 
-const Search: NextPage<IProps> = ({keySearch}) => {
+const Search: NextPage<IProps> = ({ keySearch }) => {
   const classes = useStyles();
   const [response, handleSearch] = useFirebaseSearch(firebaseConfig);
   // const [totalPage, setTotalPage] = useState(0);
@@ -90,7 +90,7 @@ const Search: NextPage<IProps> = ({keySearch}) => {
       }
     }
   };
-  useEffect( () => {
+  useEffect(() => {
     handleSearch(keySearch as string);
   }, [keySearch]);
   const [user, _, handleLogout] = useFirebaseAuth(firebaseConfig);
@@ -103,24 +103,26 @@ const Search: NextPage<IProps> = ({keySearch}) => {
   }
   const renderProduct = currentList.map((product: IBook) => {
     let url;
-    url = '/display-product/' + product.name;
-    const img = product.img ? product.img[0] : 'https://photo-3-baomoi.zadn.vn/w1000_r1/2019_06_26_541_31230527/bef0744e090ee050b91f.jpg';
-    return <Book key={product.id} name={product.name} img={img} url={url} />;
+    url = '/books/' + product.id;
+    const img = product.data.img
+      ? product.data.img[0]
+      : 'https://photo-3-baomoi.zadn.vn/w1000_r1/2019_06_26_541_31230527/bef0744e090ee050b91f.jpg';
+    return <Book key={product.id} name={product.data.name} img={img} url={url} />;
   });
   return (
     <div>
       <Navbar page={'/'} user={user} handleLogout={handleLogout} />
       <div className={classes.big_body}>
-        <div className={classes.searchTitle}>
-          <span className={classes.searchKetqua}>Kết quả tìm kiếm: </span>
-          <span className={classes.searchKeyword}>{keySearch}</span>
-        </div>
-        <div className={classes.body}>
-          {renderProduct}
-        </div>
+       
+          <h1 className={classes.searchTitle}>
+          Kết quả tìm kiếm:  {keySearch}
+          </h1> 
+         
+       
+        <div className={classes.body}>{renderProduct}</div>
         <div className={classes.searchPagination}>
           <img
-            src='/img/chevron-left-solid.svg'
+            src="/img/chevron-left-solid.svg"
             style={{
               width: '24px',
               height: '24px',
@@ -129,7 +131,8 @@ const Search: NextPage<IProps> = ({keySearch}) => {
             onClick={handleClick('back')}
           />
           <p className="paginate-number">
-            {response.length !== 0 ? currentPage : 0}/{Math.ceil(response.length/perPage)}
+            {response.length !== 0 ? currentPage : 0}/
+            {Math.ceil(response.length / perPage)}
           </p>
           <img
             src="/img/chevron-right-solid.svg"
@@ -146,8 +149,10 @@ const Search: NextPage<IProps> = ({keySearch}) => {
   );
 };
 
-Search.getInitialProps = ({query}) => {
-  const keySearch: string|undefined = query.keySearch ? query.keySearch as string : '' ;
-  return {keySearch};
+Search.getInitialProps = ({ query }) => {
+  const keySearch: string | undefined = query.keySearch
+    ? (query.keySearch as string)
+    : '';
+  return { keySearch };
 };
 export default Search;
