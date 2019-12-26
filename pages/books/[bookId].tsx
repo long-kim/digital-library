@@ -116,9 +116,10 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface IBookShowProps {
   book?: IBook | undefined;
+  bookId?: any;
 }
 
-const BookShow: NextPage<IBookShowProps> = ({ book }) => {
+const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
   const [user, , handleLogout] = useFirebaseAuth(firebaseConfig);
   const [response, setResponse] = useState<Array<any>>([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -146,16 +147,18 @@ const BookShow: NextPage<IBookShowProps> = ({ book }) => {
         .get()
         .then(snapshot => {
           snapshot.forEach(doc => {
-            data.push({
-              data: doc.data(),
-              id: doc.id,
-            });
+            if (doc.id !== bookId){
+              data.push({
+                data: doc.data(),
+                id: doc.id,
+              });
+            }
           });
           setResponse(data);
         });
     }
   };
-  getCateItemList();
+  // getCateItemList();
 
   return (
     <React.Fragment>
@@ -240,7 +243,7 @@ BookShow.getInitialProps = async ({ query }) => {
 
   const book = bookSnapshot.data() as IBook;
 
-  return { book };
+  return { book,bookId };
 };
 
 export default BookShow;
