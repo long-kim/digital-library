@@ -1,9 +1,18 @@
-import { Container, Fab, Grid, Theme, Typography } from '@material-ui/core';
+import {
+  Box,
+  CircularProgress,
+  Container,
+  Fab,
+  Grid,
+  Theme,
+  Typography,
+} from '@material-ui/core';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { NextPage } from 'next';
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 import BookDetails from '../../components/books/BookDetails';
@@ -14,43 +23,12 @@ import { IBook } from '../../components/books/interfaces';
 import RelatedBook, {
   IRelatedBookProps,
 } from '../../components/books/RelatedBook';
-import Review, { IReviewProps } from '../../components/books/Review';
+import { IReviewProps } from '../../components/books/Review';
 import Navbar from '../../components/navbar/Navbar';
 import { firebaseConfig } from '../../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
-// const reviews: IReviewProps[] = [
-//   {
-//     user: {
-//       name: 'Thinh Tran',
-//       imageURL:
-//         'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-//     },
-//     review:
-//       'However, they commented that it did tend to lag, especially at the end where two bad guys',
-//     rating: 4,
-//   },
-//   {
-//     user: {
-//       name: 'Thinh Tran',
-//       imageURL:
-//         'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-//     },
-//     review:
-//       'However, they commented that it did tend to lag, especially at the end where two bad guys',
-//     rating: 4,
-//   },
-//   {
-//     user: {
-//       name: 'Thinh Tran',
-//       imageURL:
-//         'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-//     },
-//     review:
-//       'However, they commented that it did tend to lag, especially at the end where two bad guys',
-//     rating: 4,
-//   },
-// ];
+const Review = dynamic(() => import('../../components/books/Review'));
 
 const relatedList: IRelatedBookProps[] = [
   {
@@ -122,7 +100,7 @@ interface IBookShowProps {
 const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
   const [user, _, handleLogout] = useFirebaseAuth(firebaseConfig);
   const [modalOpen, setModalOpen] = useState(false);
-  const [reviews, setReviews] = useState<IReviewProps[]>([]);
+  const [reviews, setReviews] = useState<IReviewProps[] | null>(null);
   const classes = useStyles();
 
   useEffect(() => {
@@ -151,7 +129,7 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
               })
               .then(reviewer => ({ ...reviewData, user: reviewer.data() })),
           ),
-        ]).then(reviews => setReviews(reviews));
+        ]).then(newReviews => setReviews(newReviews));
       });
   }, []);
 
@@ -196,11 +174,36 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
             <Grid item>
               <CommentForm />
             </Grid>
-            {reviews.map(({ user: reviewUser, rating, content }, idx) => (
-              <Grid key={idx} item>
-                <Review user={reviewUser} rating={rating} content={content} />
-              </Grid>
-            ))}
+            <Grid
+              container
+              component={Box}
+              flexGrow={1}
+              justifyContent="center"
+            >
+              {reviews ? (
+                reviews.length ? (
+                  reviews.map(({ user: reviewUser, rating, content }, idx) => (
+                    <Grid key={idx} item>
+                      <Review
+                        user={reviewUser}
+                        rating={rating}
+                        content={content}
+                      />
+                    </Grid>
+                  ))
+                ) : (
+                  <Box marginTop={2}>
+                    <Typography variant="body1">
+                      Chưa có review nào. Bạn có muốn viết?
+                    </Typography>
+                  </Box>
+                )
+              ) : (
+                <Box alignSelf="center">
+                  <CircularProgress />
+                </Box>
+              )}
+            </Grid>
           </Grid>
           <Grid item container md={6} direction="column">
             <Grid item>

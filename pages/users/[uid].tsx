@@ -8,13 +8,17 @@ import Error from 'next/error';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 import Navbar from '../../components/navbar/Navbar';
-import { Book } from '../../components/users/MyBooks';
+import { Book } from '../../components/users/BookItem';
 import ProfileInfo from '../../components/users/ProfileInfo';
 import { firebaseConfig } from '../../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
 const MyFriends = dynamic(() => import('../../components/users/MyFriends'));
 const MyBooks = dynamic(() => import('../../components/users/MyBooks'));
+const BorrowedBooks = dynamic(() =>
+  import('../../components/users/BorrowedBooks'),
+);
+const Discovery = dynamic(() => import('../../components/users/Discovery'));
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,6 +65,8 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid, error }) => {
   const [user, handleLogin, handleLogout] = useFirebaseAuth(firebaseConfig);
   const [tab, setTab] = useState(0);
 
+  let db: firebase.firestore.Firestore;
+
   const [
     profileData,
     setProfileData,
@@ -69,17 +75,46 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid, error }) => {
   const [friends, setFriends] = useState<
     Array<firebase.firestore.DocumentData | undefined>
   >();
-
   const [books, setBooks] = useState<Array<Book | undefined>>();
+  const [borrowed, setBorrowed] = useState<Array<Book | undefined>>([]);
+
+  const [weeklyBooks, setWeeklyBooks] = useState<Book[] | null>(null);
+  const [recommended, setRecommended] = useState<Book[] | null>(null);
 
   useEffect(() => {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
+    db = firebase.firestore();
+
+    db.collection('books')
+      .limit(3)
+      .orderBy('rating', 'desc')
+      .get()
+      .then(snapshot =>
+        snapshot.docs.map(book => ({ id: book.id, data: book.data() })),
+      )
+      .then(newWeeklyBooks => setWeeklyBooks(newWeeklyBooks))
+      .catch(e => console.error(e));
+
+    db.collection('books')
+      .limit(3)
+      .where('cate', 'array-contains', 'Tiểu thuyết')
+      .orderBy('rating', 'desc')
+      .get()
+      .then(snapshot =>
+        snapshot.docs.map(book => ({ id: book.id, data: book.data() })),
+      )
+      .then(newRecommended => setRecommended(newRecommended))
+      .catch(e => console.error(e));
   }, []);
 
   useEffect(() => {
-    const db = firebase.firestore();
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    db = firebase.firestore();
+
     db.collection('users')
       .where('uid', '==', uid as string)
       .get()
@@ -92,9 +127,11 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid, error }) => {
 
   useEffect(() => {
     const friendRefs: firebase.firestore.DocumentReference[] =
-      profileData?.friends || [];
+      profileData?.friends ?? [];
     const bookRefs: firebase.firestore.DocumentReference[] =
-      profileData?.books || [];
+      profileData?.books ?? [];
+    const borrowedRefs: firebase.firestore.DocumentReference[] =
+      profileData?.borrowed ?? [];
 
     Promise.all([
       ...friendRefs.map(async friendRef => {
@@ -117,6 +154,15 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid, error }) => {
         }
       }),
     ]).then(newBooks => setBooks(newBooks));
+
+    Promise.all([
+      ...borrowedRefs.map(borrowedRef =>
+        borrowedRef
+          .get()
+          .then(snapshot => ({ id: borrowedRef.id, data: snapshot.data() }))
+          .catch(() => undefined),
+      ),
+    ]).then(newBorrowed => setBorrowed(newBorrowed));
   }, [profileData]);
 
   return (
@@ -145,7 +191,7 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid, error }) => {
                   <MyFriends friends={friends} />
                 </TabPanel>
                 <TabPanel value={tab} index={1}>
-                  abc
+                  <Discovery weekly={weeklyBooks} recommended={recommended} />
                 </TabPanel>
                 <TabPanel value={tab} index={2}>
                   <MyBooks
@@ -153,6 +199,9 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid, error }) => {
                     own={user?.uid === uid}
                     of={profileData?.fullName}
                   />
+                </TabPanel>
+                <TabPanel value={tab} index={3}>
+                  <BorrowedBooks books={borrowed} />
                 </TabPanel>
               </Grid>
             </Grid>
@@ -188,6 +237,7 @@ Profile.getInitialProps = async ({ query }) => {
         reviews: profileData.reviews?.length || 0,
         books: profileData.books?.length || 0,
         friends: profileData.friends?.length || 0,
+        borrowed: (profileData.borrowed ?? []).length,
       },
     };
   } catch (error) {

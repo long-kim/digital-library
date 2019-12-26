@@ -15,24 +15,22 @@ const useStyles = makeStyles(theme =>
   }),
 );
 
-interface IMyBooksProps {
-  books: Array<Book | undefined> | undefined;
-  own?: boolean;
-  of?: string;
+interface IBorrowedBooksProps {
+  books: Array<Book | undefined>;
 }
 
-const MyBooks: React.FC<IMyBooksProps> = ({ books, own, of }) => {
+const BorrowedBooks: React.FC<IBorrowedBooksProps> = ({ books }) => {
   const classes = useStyles();
 
   return (
     <Grid className={classes.root} container direction="column">
       <Grid item>
         <Typography className={classes.title} variant="h4" gutterBottom>
-          {own ? 'Sách của tôi' : `Sách của ${of}`}
+          Sách đã mượn
         </Typography>
       </Grid>
       <Grid item container spacing={4} style={{ flexGrow: 1 }}>
-        {books ? (
+        {books.length ? (
           <React.Fragment>
             {books.map((book, idx) => (
               <Grid key={idx} item xs={6} md={4}>
@@ -50,4 +48,4 @@ const MyBooks: React.FC<IMyBooksProps> = ({ books, own, of }) => {
   );
 };
 
-export default MyBooks;
+export default BorrowedBooks;

@@ -1,7 +1,7 @@
 import { ButtonBase, Grid, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100%',
       width: '100%',
       objectFit: 'cover',
-      objectPosition: 'left top',
+      objectPosition: 'center top',
       borderRadius: theme.shape.borderRadius,
       boxShadow: theme.shadows[3],
     },
@@ -57,7 +57,7 @@ const BookImageGallery: React.FC<IBookImageGalleryProps> = ({ images }) => {
   const classes = useStyles();
   const [currentImage, setCurrentImage] = useState(0);
 
-  const handleImageChange = (index: number) => setCurrentImage(index);
+  const handleImageChange = (index: number) => () => setCurrentImage(index);
 
   return (
     <Grid className={classes.root} container>
@@ -78,13 +78,13 @@ const BookImageGallery: React.FC<IBookImageGalleryProps> = ({ images }) => {
               className={clsx(classes.sideImg, {
                 [classes.active]: idx === currentImage,
               })}
-              onClick={handleImageChange.bind(null, idx)}
+              onClick={handleImageChange(idx)}
               disableRipple
             >
               <LazyLoadImage
                 src={imgURL}
                 effect="blur"
-                height="100%"
+                height={250}
                 width="100%"
               />
             </ButtonBase>
