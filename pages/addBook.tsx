@@ -18,6 +18,11 @@ import useFirebaseAuth from './hooks/useFirebaseAuth';
 import { firebaseConfig } from '../firebase/config';
 import Navbar from '../components/navbar/Navbar';
 
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
+import 'firebase/storage';
+import Router from 'next/router';
+
 const PUBLIC_URL = 'http://localhost:4000/api/add-book';
 
 interface IImage {
@@ -55,6 +60,7 @@ const useStyles = makeStyles(() =>
       padding: '23px 104px',
 
       fontFamily: 'Lato',
+      minHeight: '100vh'
     },
     container__upper: {
       display: 'flex',
@@ -127,7 +133,7 @@ const AddBook: React.FC = () => {
   const [author, setAuthor] = React.useState<string>('');
   const [description, setDescription] = React.useState<string>('');
   const [categorySelect, setCategory] = React.useState<string[]>([]);
-  const [images, setImage] = React.useState<IImage[]>([]);
+  const [images, setImage] = React.useState<File[]>([]);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setCategory(event.target.value as string[]);
@@ -135,39 +141,92 @@ const AddBook: React.FC = () => {
 
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if ((event.target.files)) {
-      const extension = event.target.files[0].name.substring(event.target.files[0].name.lastIndexOf('.') + 1);
-      setImage(images.concat({
-        type: extension,
-        url: URL.createObjectURL(event.target.files[0])
-      }));
+      // const extension = event.target.files[0].name.substring(event.target.files[0].name.lastIndexOf('.') + 1);
+      // setImage(images.concat({
+      //   type: extension,
+      //   url: URL.createObjectURL(event.target.files[0])
+      // }));
+
+      setImage(images.concat(event.target.files[0]));
     }
     // console.log(images);
   }
 
   const handleSubmit = async () => {
     if (!isValidated) {
-      const data = JSON.stringify({
-        user: user?.uid,
-        name: bookName,
-        author: author,
-        overview: description,
-        cate: categorySelect,
-        img: images
-      });
+      // let formData = new FormData();
+
+      // formData.append('user', user ? user.uid : '');
+      // formData.append('name', bookName);
+      // formData.append('author', author);
+      // formData.append('overview', description);
+      // formData.append('cate', JSON.stringify(categorySelect));
+      // images.forEach((image, index) => {
+      //   formData.append(`${index}`, image)
+      // });
 
 
-      const response = await fetch(PUBLIC_URL, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: data
-      });
+      // const response = await fetch(PUBLIC_URL, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Accept': 'application/json',
+      //   },
+      //   body: formData
+      // });
 
-      const res = await response.json();
-      console.log(res);
+      // const res = await response.json();
+      // console.log(res);
 
+
+
+        // Initialize DB and Storage
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+    
+        const db = firebase.firestore();
+        const storageRef = firebase.storage().ref();
+    
+        // Get books collection ref
+        const bookRef = db.collection('books-test').doc();
+    
+        // Generate a random ID
+        const id = bookRef.id;
+
+        images.forEach((image, index) => {
+          const extension = image.name.substring(image.name.lastIndexOf('.') + 1);
+
+          // bookId/0.ext
+          const pathRef = storageRef.child(`${id}`);
+          const imageRef = pathRef.child(`${index}.${extension}`);
+          let uploadTask = imageRef.put(image);
+  
+          console.log(`Uploaded ${id}/${index}.${extension}`);
+        })
+    
+        let img: string[] = [];
+        images.forEach((image, index) => {
+          const extension = image.name.substring(image.name.lastIndexOf('.') + 1);
+          img.push(`${id}/${index}.${extension}`);
+        })
+
+        let data = {
+            author: author,
+            name: bookName,
+            overview: description,
+            cate: categorySelect,
+            img: img,
+            status: 'pending',
+            user: user ? user.uid : ''
+        }
+        console.log(data);
+        // Add to new document to books collections
+        let newDoc = await db.collection('books-test').doc(id).set(data);
+
+        alert('Uploaded');
+        Router.push('/');
+
+    
     }
   }
 
@@ -179,7 +238,7 @@ const AddBook: React.FC = () => {
 
 
   const renderImage = images.map(image => {
-    return <img src={image.url} className={classes.image}/>
+    return <img src={URL.createObjectURL(image)} className={classes.image}/>
   })
 
   
@@ -209,7 +268,7 @@ const AddBook: React.FC = () => {
                   className={classes.input}
                   value={bookName}
                   onChange={(event) => {setBookName(event.target.value)}}
-                  inputProps={{maxlength: 150}}
+                  inputProps={{maxLength: 150}}
 
                 />
               </FormControl>
@@ -224,7 +283,7 @@ const AddBook: React.FC = () => {
                   value={author}
                   onChange={(event) => {setAuthor(event.target.value)}}
                   required
-                  inputProps={{maxlength: 100}}
+                  inputProps={{maxLength: 100}}
 
                 />
               </FormControl>
@@ -239,7 +298,7 @@ const AddBook: React.FC = () => {
                   value={description}
                   onChange={(event) => {setDescription(event.target.value)}}
                   required
-                  inputProps={{maxlength: 750}}
+                  inputProps={{maxLength: 750}}
                 />
               </FormControl>
               <FormControl className={classes.form_control}>
