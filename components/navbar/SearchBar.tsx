@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const SearchBar: React.FC = () => {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState<string>('');
   const classes = useStyles();
   function handleChange(event: any) {
     setSearch(event.target.value);
