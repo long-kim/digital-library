@@ -64,7 +64,7 @@ const BookImageGallery: React.FC<IBookDetailsProps> = ({ book }) => {
         <Grid item>
           <img
             className={classes.sideImg}
-            src={book.img[0]}/>
+            src={book.img[2]}/>
         </Grid>
         <Grid item>
           <img
@@ -74,7 +74,7 @@ const BookImageGallery: React.FC<IBookDetailsProps> = ({ book }) => {
         <Grid item>
           <img
             className={classes.sideImg}
-            src={book.img[2]}/>
+            src={book.img[0]}/>
         </Grid>
       </Grid>
     </Grid>

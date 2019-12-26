@@ -15,7 +15,7 @@ interface IHomeProps {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     body: {
-        marginTop: '2rem',
+        marginTop: '1.5rem',
         display: 'flex',
         justifyContent: 'space-around',
         flexWrap: 'wrap',
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
     cateWrapper: {
         width: "90%",
         minHeight: '100vh',
-        margin: '80px auto',
+        margin: '40px auto',
     }
   }),
 );
