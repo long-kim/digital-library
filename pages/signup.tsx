@@ -13,7 +13,6 @@ import Head from 'next/head';
 import React from 'react';
 import SocialLogin from '../components/auth/SocialLogin';
 import Navbar from '../components/navbar/Navbar';
-import Footer from '../components/footer/Footer';
 import { firebaseConfig } from '../firebase/config';
 import useFirebaseAuth from './hooks/useFirebaseAuth';
 
@@ -62,7 +61,7 @@ const SignUp: NextPage = () => {
   return (
     <React.Fragment>
       <Head>
-        <title>{`Đăng ký | ${process.env.APP_NAME}`}</title>
+        <title>{`Đăng nhập | ${process.env.APP_NAME}`}</title>
       </Head>
       <Navbar user={user} handleLogout={handleLogout} />
       <Grid className={classes.root} container justify="flex-end">
@@ -76,7 +75,7 @@ const SignUp: NextPage = () => {
           md={4}
         >
           <Typography align="center" variant="h4">
-            Đăng nhập
+            Đăng ký
           </Typography>
           <form className={classes.form} action="/api/login" method="post">
             <TextField variant="outlined" label="Email" autoComplete="email" />
@@ -84,11 +83,22 @@ const SignUp: NextPage = () => {
               variant="outlined"
               label="Mật khẩu"
               type="password"
-              autoComplete="current-password"
+              autoComplete="new-password"
+            />
+            <TextField
+              variant="outlined"
+              label="Nhập lại mật khẩu"
+              type="password"
+              autoComplete="new-password"
             />
             <FormControlLabel
               control={<Checkbox value="agree" color="primary" />}
-              label="Lưu thông tin"
+              label={
+                <span>
+                  Đồng ý với các điều khoản
+                  <span className={classes.red}>*</span>
+                </span>
+              }
             />
             <Button
               className={classes.signupButton}
@@ -97,7 +107,7 @@ const SignUp: NextPage = () => {
               variant="contained"
               color="secondary"
             >
-              ĐĂNG NHẬP
+              ĐĂNG KÝ
             </Button>
           </form>
           <SocialLogin />

@@ -25,13 +25,13 @@ const NextComposed = React.forwardRef<HTMLAnchorElement, INextComposedProp>(
 );
 
 interface ILinkProps {
-  activeClassName: string;
-  as: string;
-  className: string;
+  activeClassName?: string;
+  as?: string;
+  className?: string;
   href: string;
-  innerRef: React.Ref<HTMLAnchorElement>;
-  naked: boolean;
-  prefetch: boolean;
+  innerRef?: React.Ref<HTMLAnchorElement>;
+  naked?: boolean;
+  prefetch?: boolean;
   [key: string]: any;
 }
 
