@@ -20,6 +20,11 @@ import Navbar from '../components/navbar/Navbar';
 
 const PUBLIC_URL = 'http://localhost:4000/api/add-book';
 
+interface IImage {
+  type: string,
+  url: string
+}
+
 const categories = [
   'Tiểu thuyết',
   'Trinh thám',
@@ -39,10 +44,6 @@ const MenuProps = {
       width: 250,
     },
   },
-};
-
-const textareaProps = {
-  maxlength: 200
 };
 
 const useStyles = makeStyles(() =>
@@ -126,7 +127,7 @@ const AddBook: React.FC = () => {
   const [author, setAuthor] = React.useState<string>('');
   const [description, setDescription] = React.useState<string>('');
   const [categorySelect, setCategory] = React.useState<string[]>([]);
-  const [images, setImage] = React.useState<string[]>([]);
+  const [images, setImage] = React.useState<IImage[]>([]);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setCategory(event.target.value as string[]);
@@ -134,7 +135,11 @@ const AddBook: React.FC = () => {
 
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if ((event.target.files)) {
-      setImage(images.concat(URL.createObjectURL(event.target.files[0])));
+      const extension = event.target.files[0].name.substring(event.target.files[0].name.lastIndexOf('.') + 1);
+      setImage(images.concat({
+        type: extension,
+        url: URL.createObjectURL(event.target.files[0])
+      }));
     }
     // console.log(images);
   }
@@ -150,7 +155,6 @@ const AddBook: React.FC = () => {
         img: images
       });
 
-      // console.log(PUBLIC_URL);
 
       const response = await fetch(PUBLIC_URL, {
         method: 'POST',
@@ -175,7 +179,7 @@ const AddBook: React.FC = () => {
 
 
   const renderImage = images.map(image => {
-    return <img src={image} className={classes.image}/>
+    return <img src={image.url} className={classes.image}/>
   })
 
   
