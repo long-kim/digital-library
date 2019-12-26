@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme: Theme) =>
     container: {
         width: "340px",
         height: "280px",
-        margin: '30px 30px',
+        margin: '0 30px 45px 30px',
     },
     cateImg: {
         width: '100%',

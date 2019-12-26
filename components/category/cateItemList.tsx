@@ -23,7 +23,8 @@ const useStyles = makeStyles((theme: Theme) =>
         margin: '40px auto',
     },
     body: {
-        marginTop: '1.5rem',
+        width: '1400px',
+        margin: '1.5rem auto 0',
         display: 'flex',
         justifyContent: 'flex-start',
         flexWrap: 'wrap',
