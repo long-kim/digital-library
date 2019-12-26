@@ -1,6 +1,8 @@
 import { fade, InputBase, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
-import React from 'react';
+import Router from 'next/router';
+import React, {useState} from 'react';
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,17 +33,32 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const SearchBar: React.FC = () => {
+  const [search, setSearch] = useState('');
   const classes = useStyles();
-
+  function handleChange(event: any) {
+    setSearch(event.target.value);
+  }
+  function onSubmit(event: any) {
+    event.preventDefault();
+    if (search.length > 0) {
+      Router.push({
+        pathname: '/search',
+        query: {keySearch: search},
+      });
+    }
+  }
   return (
     <div className={classes.search}>
-      <InputBase
-        placeholder="Tìm kiếm..."
-        classes={{
-          root: classes.inputRoot,
-          input: classes.inputInput,
-        }}
-      />
+      <form onSubmit={onSubmit}>
+        <InputBase
+          onChange={handleChange}
+          placeholder="Tìm kiếm..."
+          classes={{
+            root: classes.inputRoot,
+            input: classes.inputInput,
+          }}
+        />
+      </form>
     </div>
   );
 };

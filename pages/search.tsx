@@ -1,10 +1,12 @@
 import { createStyles, Theme } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import React, { Component, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/navbar/Navbar';
+import { NextPage } from 'next';
 import Book from '../components/search/book';
 import { firebaseConfig } from '../firebase/config';
 import useFirebaseAuth from './hooks/useFirebaseAuth';
+import useFirebaseSearch from '../hooks/useFirebaseSearch';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -57,7 +59,8 @@ const products = [
 ];
 
 interface IProps {
-  products: Array<Object>;
+  // products: Array<Object>;
+  keySearch?: string|string[];
 }
 
 // type IState = {
@@ -66,9 +69,9 @@ interface IProps {
 //   perPage?: number;
 //   allProduct?: Array<Object> | undefined;
 // };
-
-const Search: React.FC<IProps> = () => {
+const Search: NextPage<IProps> = ({keySearch}) => {
   const classes = useStyles();
+  const [response, handleSearch] = useFirebaseSearch(firebaseConfig);
   // const [totalPage, setTotalPage] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -87,26 +90,29 @@ const Search: React.FC<IProps> = () => {
       }
     }
   };
-
+  useEffect( () => {
+    handleSearch(keySearch);
+  }, []);
   const [user, _, handleLogout] = useFirebaseAuth(firebaseConfig);
   const indexOfLast = currentPage * perPage;
   const indexOfFirst = indexOfLast - perPage;
   let currentList: Object[];
   currentList = [];
-  if (products) {
-    currentList = products.slice(indexOfFirst, indexOfLast);
+  if (response) {
+    currentList = response.slice(indexOfFirst, indexOfLast);
   }
   const renderProduct = currentList.map((product: any, i) => {
     let url;
     url = '/display-product/' + product.name;
-    return <Book key={i} name={product.name} img={product.img} url={url} />;
+    const img = product.img ? product.img[0] : "https://photo-3-baomoi.zadn.vn/w1000_r1/2019_06_26_541_31230527/bef0744e090ee050b91f.jpg";
+    return <Book key={product.id} name={product.name} img={img} url={url} />;
   });
   return (
     <div>
       <Navbar page={'/'} user={user} handleLogout={handleLogout} />
       <div className={classes.searchTitle}>
         <span className={classes.searchKetqua}>Kết quả tìm kiếm: </span>
-        <span className={classes.searchKeyword}>Tiểu thuyết</span>
+        <span className={classes.searchKeyword}>{keySearch}</span>
       </div>
       <div className={classes.searchDisplayBook}>{renderProduct}</div>
       <div className={classes.searchPagination}>
@@ -134,6 +140,11 @@ const Search: React.FC<IProps> = () => {
       </div>
     </div>
   );
+};
+
+Search.getInitialProps = ({query}) => {
+  const keySearch:string|string[] = query.keySearch ? query.keySearch : '';
+  return {keySearch};
 };
 
 export default Search;
