@@ -8,6 +8,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '188px',
       height: '287px',
       backgroundSize: 'cover',
+      objectFit: 'cover',
     },
     searchSubTitle: {
       color: '#3b3b3b',
@@ -48,11 +49,13 @@ const Book: React.FC<IProps> = ({ key, url, img, name }) => {
         // display: 'flex',
         // justifyContent: 'center',
         position: 'relative',
+        width: "200px",
+        margin: '0 40px',
       }}
     >
       <a href={url} className={classes.searchSubTitle}>
         <img src={img} alt={name} className={classes.searchBook} />
-        <button className={classes.addToCartBtn}>Thêm vào giỏ</button>
+        {/* <button className={classes.addToCartBtn}>Thêm vào giỏ</button> */}
         <div>
           <p style={{ marginTop: '0' }}>{name}</p>
         </div>
