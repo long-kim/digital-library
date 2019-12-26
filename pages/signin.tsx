@@ -8,13 +8,15 @@ import {
   Typography,
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
+import { Formik, FormikHelpers, FormikProps } from 'formik';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import React from 'react';
 import SocialLogin from '../components/auth/SocialLogin';
+import Footer from '../components/footer/Footer';
 import Navbar from '../components/navbar/Navbar';
 import { firebaseConfig } from '../firebase/config';
-import useFirebaseAuth from './hooks/useFirebaseAuth';
+import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,14 +56,61 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+interface ISignupFormValues {
+  email: string;
+  password: string;
+  rePassword: string;
+}
+
 const SignIn: NextPage = () => {
   const [user, handleLogin, handleLogout] = useFirebaseAuth(firebaseConfig);
   const classes = useStyles();
+  const initialValues: ISignupFormValues = {
+    email: '',
+    password: '',
+    rePassword: '',
+  };
+
+  const renderSignUpForm = (props: FormikProps<ISignupFormValues>) => {
+    const { errors, values } = props;
+
+    return (
+      <form className={classes.form} action="/api/login" method="post">
+        <TextField variant="outlined" label="Email" autoComplete="email" />
+        <TextField
+          variant="outlined"
+          label="Mật khẩu"
+          type="password"
+          autoComplete="current-password"
+        />
+        <FormControlLabel
+          control={<Checkbox value="agree" color="primary" />}
+          label="Lưu thông tin"
+        />
+        <Button
+          className={classes.signupButton}
+          size="large"
+          type="submit"
+          variant="contained"
+          color="secondary"
+        >
+          ĐĂNG NHẬP
+        </Button>
+      </form>
+    );
+  };
+
+  const handleSubmit = (
+    values: ISignupFormValues,
+    actions: FormikHelpers<ISignupFormValues>,
+  ) => {
+    actions.setSubmitting(false);
+  };
 
   return (
     <React.Fragment>
       <Head>
-        <title>{`Đăng nhập | ${process.env.APP_NAME}`}</title>
+        <title>{`Đăng ký | ${process.env.APP_NAME}`}</title>
       </Head>
       <Navbar user={user} handleLogout={handleLogout} />
       <Grid className={classes.root} container justify="flex-end">
@@ -75,41 +124,13 @@ const SignIn: NextPage = () => {
           md={4}
         >
           <Typography align="center" variant="h4">
-            Đăng ký
+            Đăng nhập
           </Typography>
-          <form className={classes.form} action="/api/login" method="post">
-            <TextField variant="outlined" label="Email" autoComplete="email" />
-            <TextField
-              variant="outlined"
-              label="Mật khẩu"
-              type="password"
-              autoComplete="new-password"
-            />
-            <TextField
-              variant="outlined"
-              label="Nhập lại mật khẩu"
-              type="password"
-              autoComplete="new-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="agree" color="primary" />}
-              label={
-                <span>
-                  Đồng ý với các điều khoản
-                  <span className={classes.red}>*</span>
-                </span>
-              }
-            />
-            <Button
-              className={classes.signupButton}
-              size="large"
-              type="submit"
-              variant="contained"
-              color="secondary"
-            >
-              ĐĂNG KÝ
-            </Button>
-          </form>
+          <Formik
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            render={renderSignUpForm}
+          />
           <SocialLogin />
         </Grid>
       </Grid>

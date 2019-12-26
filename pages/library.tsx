@@ -9,7 +9,7 @@ import Link from '../components/Link';
 import Navbar from '../components/navbar/Navbar';
 import ProTip from '../components/ProTip';
 import { firebaseConfig } from '../firebase/config';
-import useFirebaseAuth from './hooks/useFirebaseAuth';
+import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
 interface IHomeProps {
   pathname?: string;
