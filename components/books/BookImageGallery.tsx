@@ -1,6 +1,7 @@
 import { Grid, Theme } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import React from 'react';
+import {IBook} from './interfaces';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,15 +36,21 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const BookImageGallery: React.FC = () => {
+interface IBookDetailsProps {
+  book: IBook | undefined;
+}
+
+const BookImageGallery: React.FC<IBookDetailsProps> = ({ book }) => {
   const classes = useStyles();
 
-  return (
+  return  (
+    <React.Fragment> 
+      {book && (
     <Grid className={classes.root} container>
       <Grid className={classes.mainImgWrapper} item md={8}>
         <img
           className={classes.mainImg}
-          src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
+          src={book.img[0]}
         />
       </Grid>
       <Grid
@@ -57,24 +64,23 @@ const BookImageGallery: React.FC = () => {
         <Grid item>
           <img
             className={classes.sideImg}
-            src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
-          />
+            src={book.img[2]}/>
         </Grid>
         <Grid item>
           <img
             className={classes.sideImg}
-            src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
-          />
+            src={book.img[1]}/>
         </Grid>
         <Grid item>
           <img
             className={classes.sideImg}
-            src="https://images-na.ssl-images-amazon.com/images/I/810BkqRP%2BiL.jpg"
-          />
+            src={book.img[0]}/>
         </Grid>
       </Grid>
     </Grid>
-  );
+    )}
+    </React.Fragment>
+  ); 
 };
 
 export default BookImageGallery;
