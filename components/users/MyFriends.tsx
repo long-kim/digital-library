@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   ButtonBase,
   CircularProgress,
   Grid,
@@ -66,7 +67,7 @@ const FriendItem: React.FC<IFriendItemProps> = ({ friend }) => {
 
 interface IMyFriendsProps {
   profileData?: firebase.firestore.DocumentData | null;
-  friends: Array<firebase.firestore.DocumentData | undefined> | undefined;
+  friends: Array<firebase.firestore.DocumentData | undefined> | null;
   setFriends?: (
     friends: Array<firebase.firestore.DocumentData | undefined> | undefined,
   ) => void;
@@ -84,11 +85,19 @@ const MyFriends: React.FC<IMyFriendsProps> = ({ friends }) => {
       </Grid>
       <Grid item container spacing={4} style={{ flexGrow: 1 }}>
         {friends ? (
-          friends.map((friend, idx) => (
-            <Grid key={idx} item xs={6} lg={4}>
-              <FriendItem friend={friend} />
+          friends.length ? (
+            friends.map((friend, idx) => (
+              <Grid key={idx} item xs={6} lg={4}>
+                <FriendItem friend={friend} />
+              </Grid>
+            ))
+          ) : (
+            <Grid item container justify="center" alignItems="center">
+              <Typography variant="body1">
+                Người dùng này chưa kết bạn.
+              </Typography>
             </Grid>
-          ))
+          )
         ) : (
           <Grid item container justify="center" alignItems="center">
             <CircularProgress size="3rem" />

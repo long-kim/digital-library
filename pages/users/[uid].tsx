@@ -7,6 +7,8 @@ import dynamic from 'next/dynamic';
 import Error from 'next/error';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
+import { forkJoin, of, pipe, from, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import Navbar from '../../components/navbar/Navbar';
 import { Book } from '../../components/users/BookItem';
 import ProfileInfo from '../../components/users/ProfileInfo';
@@ -72,9 +74,9 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid, error }) => {
     setProfileData,
   ] = useState<firebase.firestore.DocumentData | null>(null);
 
-  const [friends, setFriends] = useState<
-    Array<firebase.firestore.DocumentData | undefined>
-  >();
+  const [friends, setFriends] = useState<Array<
+    firebase.firestore.DocumentData | undefined
+  > | null>(null);
   const [books, setBooks] = useState<Array<Book | undefined>>();
   const [borrowed, setBorrowed] = useState<Array<Book | undefined>>([]);
 
@@ -133,16 +135,17 @@ const Profile: NextPage<IProfileProps> = ({ profile, uid, error }) => {
     const borrowedRefs: firebase.firestore.DocumentReference[] =
       profileData?.borrowed ?? [];
 
-    Promise.all([
-      ...friendRefs.map(async friendRef => {
-        try {
-          const friendDocSnapshot = await friendRef.get();
-          return friendDocSnapshot.data();
-        } catch (error) {
-          return undefined;
-        }
-      }),
-    ]).then(newFriends => setFriends(newFriends));
+    forkJoin(
+      ...friendRefs.map(friendRef =>
+        from(friendRef.get()).pipe(
+          map(snapshot => snapshot.data()),
+          catchError(e => throwError(e)),
+        ),
+      ),
+    ).subscribe(
+      newFriends => setFriends(newFriends),
+      () => setFriends([]),
+    );
 
     Promise.all([
       ...bookRefs.map(async bookRef => {

@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
 import _ from 'lodash';
 import Link from 'next/link';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -39,39 +39,43 @@ export interface Book {
   data: firebase.firestore.DocumentData | undefined;
 }
 
+const renderBookItem = (book: Book) => {
+  const truncatedName = useMemo(
+    () => _.truncate(book.data?.name, { length: 36 }),
+    [book],
+  );
+  const classes = useStyles();
+
+  return (
+    <Link href="/books/[bookId]" as={`/books/${book.id}`} passHref>
+      <ButtonBase className={classes.buttonBase}>
+        <Grid container direction="column" alignItems="center">
+          <Grid item container>
+            <Avatar
+              className={classes.avatar}
+              src={book.data?.img?.[0]}
+              variant="rounded"
+            >
+              <LibraryBooksIcon fontSize="large" />
+            </Avatar>
+          </Grid>
+          <Grid item className={classes.bookTitle}>
+            <Typography variant="h6" align="center">
+              {truncatedName}
+            </Typography>
+          </Grid>
+        </Grid>
+      </ButtonBase>
+    </Link>
+  );
+};
+
 export interface IBookItemProps {
   book: Book | undefined;
 }
 
-const BookItem: React.FC<IBookItemProps> = ({ book }) => {
-  const classes = useStyles();
-
-  return (
-    <React.Fragment>
-      {book && (
-        <Link href="/books/[bookId]" as={`/books/${book.id}`} passHref>
-          <ButtonBase className={classes.buttonBase}>
-            <Grid container direction="column" alignItems="center">
-              <Grid item container>
-                <Avatar
-                  className={classes.avatar}
-                  src={book.data?.img?.[0]}
-                  variant="rounded"
-                >
-                  <LibraryBooksIcon fontSize="large" />
-                </Avatar>
-              </Grid>
-              <Grid item className={classes.bookTitle}>
-                <Typography variant="h6" align="center">
-                  {_.truncate(book.data?.name, { length: 36 })}
-                </Typography>
-              </Grid>
-            </Grid>
-          </ButtonBase>
-        </Link>
-      )}
-    </React.Fragment>
-  );
-};
+const BookItem: React.FC<IBookItemProps> = ({ book }) => (
+  <React.Fragment>{book && renderBookItem(book)}</React.Fragment>
+);
 
 export default BookItem;
