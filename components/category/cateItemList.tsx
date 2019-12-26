@@ -79,7 +79,7 @@ const CateItemList: NextPage<IHomeProps> = ({ cateName }) => {
                     let url;
                     url = '/books/' + book.id;
                     let img = book.data.img ? book.data.img[0] : "https://marketplace.canva.com/EADajpcXwvU/1/0/501w/canva-rust-orange-lioness-vintage-book-cover-2r7-sbV3ztw.jpg";
-                    return <Book key={book.id} name={book.data.name} img={img} url={url}></Book>
+                    return <Book key={i} name={book.data.name} img={img} url={url}></Book>
                 })}
             </div>
         </div>

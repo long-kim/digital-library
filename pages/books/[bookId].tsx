@@ -120,12 +120,42 @@ interface IBookShowProps {
 
 const BookShow: NextPage<IBookShowProps> = ({ book }) => {
   const [user, , handleLogout] = useFirebaseAuth(firebaseConfig);
+  const [response, setResponse] = useState<Array<any>>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const classes = useStyles();
 
   const handleClickOpen = () => setModalOpen(true);
 
   const handleClose = () => setModalOpen(false);
+
+  // console.log(book && book.cate[0]);
+
+  const getCateItemList = () => {
+    // Initialize DB and Storage
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+    // const storageRef = firebase.storage().ref();
+    let data: Array<any> = [];
+
+    if (book) {
+      db.collection('books')
+        .where('cate', 'array-contains', book.cate[0])
+        .limit(6)
+        .get()
+        .then(snapshot => {
+          snapshot.forEach(doc => {
+            data.push({
+              data: doc.data(),
+              id: doc.id,
+            });
+          });
+          setResponse(data);
+        });
+    }
+  };
+  getCateItemList();
 
   return (
     <React.Fragment>
@@ -155,7 +185,7 @@ const BookShow: NextPage<IBookShowProps> = ({ book }) => {
             </Grid>
           </Grid>
           <Grid item xs={6}>
-            <BookImageGallery book={book}/>
+            <BookImageGallery book={book} />
           </Grid>
         </Grid>
         <Grid item className={classes.linebreak} />
@@ -180,9 +210,9 @@ const BookShow: NextPage<IBookShowProps> = ({ book }) => {
               container
               spacing={3}
             >
-              {relatedList.map(({ id, name, coverURL }, idx) => (
-                <Grid key={idx} item md={6} lg={4}>
-                  <RelatedBook id={id} name={name} coverURL={coverURL} />
+              {response.map((book : any, i:any) => (
+                <Grid key={i} item md={6} lg={4}>
+                  <RelatedBook id={book.id} name={book.data.name} coverURL={book.data.img[0]} />
                 </Grid>
               ))}
             </Grid>
