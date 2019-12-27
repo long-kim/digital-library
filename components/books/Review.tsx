@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
       boxShadow: theme.shadows[1],
     },
     review: {
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(2),
       color: '#939393',
     },
   }),

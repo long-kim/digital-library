@@ -10,10 +10,12 @@ import {
 import { Rating } from '@material-ui/lab';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import { useFormik } from 'formik';
+import _ from 'lodash';
 import React, { useState } from 'react';
 import { throwError } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
+import * as Yup from 'yup';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,10 +27,12 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const CommentForm: React.FC<{
+interface ICommentFormProps {
   bookId: string | undefined;
   currentUid: string | undefined;
-}> = ({ bookId, currentUid }) => {
+}
+
+const CommentForm: React.FC<ICommentFormProps> = ({ bookId, currentUid }) => {
   const [rating, setRating] = useState(3);
   const [submit, setSubmit] = useState(false);
   const classes = useStyles();
@@ -38,20 +42,30 @@ const CommentForm: React.FC<{
       rating,
       content: '',
     },
+    validationSchema: Yup.object<{ rating: number; content: string }>({
+      rating: Yup.number()
+        .min(0)
+        .max(5),
+      content: Yup.string()
+        .min(20, 'Nội dung review cần dài hơn 20 kí tự!')
+        .required('Nội dung review không được trống!'),
+    }),
     onSubmit: values => {
       setSubmit(true);
-      return ajax({
+      ajax({
         url: `/api/books/${bookId}/reviews`,
         method: 'post',
         body: { ...values, uid: currentUid },
       })
         .pipe(
           tap(res => console.log(res)),
+          map(res => res.status === 200),
           catchError(e => throwError(e)),
         )
-        .toPromise()
-        .then(res => res.status === 200 && setSubmit(false))
-        .catch(error => console.error(error));
+        .subscribe(
+          status => status && setSubmit(false),
+          e => console.error(e),
+        );
     },
   });
 
@@ -82,6 +96,8 @@ const CommentForm: React.FC<{
           disabled={submit}
           fullWidth
           onChange={formik.handleChange}
+          error={!_.isUndefined(formik.errors.content)}
+          helperText={formik.errors.content}
         />
       </Grid>
       <Grid item container justify="flex-end">
