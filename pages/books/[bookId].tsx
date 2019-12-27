@@ -7,8 +7,8 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
-import { createStyles, makeStyles } from '@material-ui/styles';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { NextPage } from 'next';
@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 import BookDetails from '../../components/books/BookDetails';
 import BookImageGallery from '../../components/books/BookImageGallery';
 import BorrowModal from '../../components/books/BorrowModal';
-import CommentForm from '../../components/books/CommentForm';
+// import CommentForm from '../../components/books/CommentForm';
 import { IBook } from '../../components/books/interfaces';
 import RelatedBook, {
   IRelatedBookProps,
@@ -29,6 +29,7 @@ import { firebaseConfig } from '../../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
 const Review = dynamic(() => import('../../components/books/Review'));
+const CommentForm = dynamic(() => import('../../components/books/CommentForm'));
 
 const relatedList: IRelatedBookProps[] = [
   {
@@ -92,15 +93,16 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-interface IBookShowProps {
+interface BookShowProps {
   book?: IBook | undefined;
   bookId?: string;
 }
 
-const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
+const BookShow: NextPage<BookShowProps> = ({ book, bookId }) => {
   const [user, _, handleLogout] = useFirebaseAuth(firebaseConfig);
   const [modalOpen, setModalOpen] = useState(false);
   const [reviews, setReviews] = useState<IReviewProps[] | null>(null);
+
   const classes = useStyles();
 
   useEffect(() => {
@@ -113,7 +115,7 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
       .collection('reviews')
       .where('book', '==', bookId)
       .onSnapshot(
-        snapshot => {
+        snapshot =>
           Promise.all(
             snapshot.docs.map(doc => {
               const userRef: firebase.firestore.DocumentReference = doc.get(
@@ -124,10 +126,13 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
                 user: userSnapshot.data(),
               }));
             }),
-          ).then((fetchedReviews: IReviewProps[]) =>
-            setReviews(fetchedReviews),
-          );
-        },
+          )
+            .then((fetchedReviews: IReviewProps[]) =>
+              setReviews(fetchedReviews),
+            )
+            .catch(error => {
+              throw error;
+            }),
         err => console.error(err),
       );
   }, []);
@@ -139,7 +144,7 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
   return (
     <React.Fragment>
       <Head>
-        <title>Trang chủ | Digital Library</title>
+        <title>{`${book?.name} | Digital Library`}</title>
       </Head>
       <Navbar user={user} handleLogout={handleLogout} />
       <Container className={classes.bookShowcase} maxWidth="lg">
@@ -160,7 +165,11 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
                 />
                 Thêm vào giỏ
               </Fab>
-              <BorrowModal onClose={handleClose} open={modalOpen} />
+              <BorrowModal
+                onClose={handleClose}
+                open={modalOpen}
+                bookId={bookId}
+              />
             </Grid>
           </Grid>
           <Grid item xs={6}>
@@ -173,12 +182,7 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
             <Grid item>
               <CommentForm bookId={bookId} currentUid={user?.uid} />
             </Grid>
-            <Grid
-              container
-              component={Box}
-              flexGrow={1}
-              justifyContent="center"
-            >
+            <Grid container component={Box} justifyContent="center">
               {reviews ? (
                 reviews.length ? (
                   reviews.map(({ user: reviewUser, rating, content }, idx) => (
@@ -198,7 +202,7 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
                   </Box>
                 )
               ) : (
-                <Box alignSelf="center">
+                <Box alignSelf="center" marginTop={6}>
                   <CircularProgress />
                 </Box>
               )}

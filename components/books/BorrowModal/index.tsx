@@ -7,79 +7,69 @@ import {
   List,
   Theme,
   Typography,
+  Box,
+  CircularProgress,
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
-import React from 'react';
-import { IUser } from '../interfaces';
 import BorrowItem from './BorrowItem';
+import { IUser } from '../interfaces';
+import React, { useEffect, useState } from 'react';
+import { firebaseConfig } from '../../../firebase/config';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import { from, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      padding: theme.spacing(2),
+      // padding: theme.spacing(2),
     },
     lenderListRoot: {
-      marginTop: theme.spacing(2),
+      margin: theme.spacing(2, -2, 0),
     },
   }),
 );
 
-const lenders: IBookLender[] = [
-  {
-    user: {
-      name: 'Thinh Tran',
-      imageURL:
-        'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-    },
-  },
-  {
-    user: {
-      name: 'Thinh Tran',
-      imageURL:
-        'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-    },
-  },
-  {
-    user: {
-      name: 'Thinh Tran',
-      imageURL:
-        'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-    },
-  },
-  {
-    user: {
-      name: 'Thinh Tran',
-      imageURL:
-        'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-    },
-  },
-  {
-    user: {
-      name: 'Thinh Tran',
-      imageURL:
-        'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-    },
-  },
-  {
-    user: {
-      name: 'Thinh Tran',
-      imageURL:
-        'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-    },
-  },
-];
-
-interface IBookLender {
+interface BookLender extends firebase.firestore.DocumentData {
   user: IUser;
 }
 
 interface IBorrowModalProps {
   open: boolean;
   onClose: () => void;
+  bookId: string | undefined;
 }
 
-const BorrowModal: React.FC<IBorrowModalProps> = ({ open, onClose }) => {
+const BorrowModal: React.FC<IBorrowModalProps> = ({
+  open,
+  onClose,
+  bookId,
+}) => {
+  const [bookLenders, setBookLenders] = useState<BookLender[] | null>(null);
   const classes = useStyles();
+
+  useEffect(() => {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    const db = firebase.firestore();
+    from(
+      db
+        .collection('users')
+        .where('books', 'array-contains', db.doc(`books/${bookId}`))
+        .get(),
+    )
+      .pipe(
+        map(snapshot =>
+          snapshot.docs.map(doc => ({ user: doc.data() as IUser })),
+        ),
+        tap(lenders => console.log(lenders)),
+        catchError(e => throwError(e)),
+      )
+      .subscribe(lenders => setBookLenders(lenders));
+  }, []);
 
   return (
     <Dialog
@@ -104,24 +94,30 @@ const BorrowModal: React.FC<IBorrowModalProps> = ({ open, onClose }) => {
         </Grid>
       </DialogTitle>
       <DialogContent>
-        <Grid container direction="column">
-          <Grid item container direction="column">
-            <Grid item>
-              <Typography variant="h6" gutterBottom>
-                Các thành viên đang chia sẻ
-              </Typography>
-              <Typography variant="body1">
-                Hiện có {lenders.length} thành viên sẵn sàng cho bạn mượn cuốn
-                sách này
-              </Typography>
-            </Grid>
-            <Grid className={classes.lenderListRoot} item component={List}>
-              {lenders.map(({ user }, idx) => (
-                <BorrowItem key={idx} user={user} />
-              ))}
+        {bookLenders ? (
+          <Grid container direction="column">
+            <Grid item container direction="column">
+              <Grid item>
+                <Typography variant="h6" gutterBottom>
+                  Các thành viên đang chia sẻ
+                </Typography>
+                <Typography variant="body1">
+                  Hiện có {bookLenders.length} thành viên sẵn sàng cho bạn mượn
+                  cuốn sách này
+                </Typography>
+              </Grid>
+              <Grid className={classes.lenderListRoot} item component={List}>
+                {bookLenders.map(({ user }, idx) => (
+                  <BorrowItem key={idx} lender={user} />
+                ))}
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
+        ) : (
+          <Box display="flex" justifyContent="center" my={4}>
+            <CircularProgress />
+          </Box>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -30,7 +30,7 @@ interface User {
   imageURL?: string;
 }
 
-export interface IReviewProps {
+export interface IReviewProps extends firebase.firestore.DocumentData {
   user: firebase.firestore.DocumentData;
   content: string;
   rating: number;
@@ -50,7 +50,7 @@ const Review: React.FC<IReviewProps> = ({ user, rating, content }) => {
             <Link href="/users/[uid]" as={`/users/${user?.uid}`}>
               <Typography variant="h6">{user?.fullName}</Typography>
             </Link>
-            <Rating readOnly value={rating} size="small" />
+            <Rating readOnly value={rating} size="small" precision={0.5} />
           </Grid>
         </Grid>
       </Grid>

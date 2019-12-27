@@ -6,31 +6,41 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { IUser } from '../interfaces';
+import Link from '../../Link';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles(theme =>
   createStyles({
     root: {
-      paddingLeft: 0,
+      borderRadius: theme.shape.borderRadius,
     },
   }),
 );
 
 interface IBorrowItemProps {
-  user: IUser;
+  lender: IUser;
 }
 
-const BorrowItem: React.FC<IBorrowItemProps> = ({ user }) => {
+const BorrowItem: React.FC<IBorrowItemProps> = ({ lender }) => {
   const classes = useStyles();
 
   return (
-    <ListItem classes={{ root: classes.root }}>
+    <ListItem
+      button
+      component={Link}
+      href="/users/[uid]"
+      as={`/users/${lender.uid}`}
+      classes={{ root: classes.root }}
+    >
       <ListItemAvatar>
-        <Avatar src={user.imageURL} />
+        <Avatar src={lender.photoURL} />
       </ListItemAvatar>
-      <ListItemText primary={user.name} secondary="Gold Member" />
+      <ListItemText
+        primary={lender.fullName}
+        secondary={lender.room ?? 'Không có thông tin'}
+      />
       <ListItemSecondaryAction>
         <Button color="primary">Hỏi mượn</Button>
       </ListItemSecondaryAction>

@@ -32,6 +32,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
         user: db.doc(`users/${user.id}`),
         content,
         rating: parseFloat(rating),
+        timestamp: firebase.firestore.Timestamp.fromDate(new Date()),
       });
     })
     .then(() => db.doc(`books/${bookId}`).get())

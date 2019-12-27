@@ -1,5 +1,5 @@
 import { Container, Grid } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles} from '@material-ui/core/styles';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { NextPage } from 'next';
@@ -8,7 +8,6 @@ import Error from 'next/error';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 import { forkJoin, from, throwError } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
 import { catchError, map } from 'rxjs/operators';
 import Navbar from '../../components/navbar/Navbar';
 import { Book } from '../../components/users/BookItem';
@@ -58,13 +57,13 @@ const TabPanel: React.FC<ITabPanelProps> = ({ index, value, children }) => {
   );
 };
 
-interface IProfileProps {
+interface ProfileProps {
   profile?: any;
   uid?: string;
   error?: any;
 }
 
-const Profile: NextPage<IProfileProps> = ({ profile, uid, error }) => {
+const Profile: NextPage<ProfileProps> = ({ profile, uid, error }) => {
   const [user, , handleLogout] = useFirebaseAuth(firebaseConfig);
   const [tab, setTab] = useState(0);
 
