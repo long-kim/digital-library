@@ -7,8 +7,9 @@ import dynamic from 'next/dynamic';
 import Error from 'next/error';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
-import { forkJoin, of, pipe, from, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { forkJoin, from, throwError } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { catchError, map } from 'rxjs/operators';
 import Navbar from '../../components/navbar/Navbar';
 import { Book } from '../../components/users/BookItem';
 import ProfileInfo from '../../components/users/ProfileInfo';
@@ -22,7 +23,7 @@ const BorrowedBooks = dynamic(() =>
 );
 const Discovery = dynamic(() => import('../../components/users/Discovery'));
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       color: '#726969',
@@ -64,7 +65,7 @@ interface IProfileProps {
 }
 
 const Profile: NextPage<IProfileProps> = ({ profile, uid, error }) => {
-  const [user, handleLogin, handleLogout] = useFirebaseAuth(firebaseConfig);
+  const [user, , handleLogout] = useFirebaseAuth(firebaseConfig);
   const [tab, setTab] = useState(0);
 
   let db: firebase.firestore.Firestore;

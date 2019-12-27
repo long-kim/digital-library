@@ -109,28 +109,27 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
     }
 
     const db = firebase.firestore();
-    db.collection('books')
-      .doc(bookId as string)
-      .get()
-      .then(bookDocumentSnapshot => bookDocumentSnapshot.data())
-      .then(bookData => {
-        const reviewRefs: firebase.firestore.DocumentReference[] | undefined =
-          bookData?.reviews;
-        let reviewData: any;
-
-        return Promise.all([
-          ...(reviewRefs ?? []).map(reviewRef =>
-            reviewRef
-              .get()
-              .then(snapshot => snapshot.data())
-              .then(data => {
-                reviewData = data;
-                return data?.user.get();
-              })
-              .then(reviewer => ({ ...reviewData, user: reviewer.data() })),
-          ),
-        ]).then(newReviews => setReviews(newReviews));
-      });
+    return db
+      .collection('reviews')
+      .where('book', '==', bookId)
+      .onSnapshot(
+        snapshot => {
+          Promise.all(
+            snapshot.docs.map(doc => {
+              const userRef: firebase.firestore.DocumentReference = doc.get(
+                'user',
+              );
+              return userRef?.get().then(userSnapshot => ({
+                ...doc.data(),
+                user: userSnapshot.data(),
+              }));
+            }),
+          ).then((fetchedReviews: IReviewProps[]) =>
+            setReviews(fetchedReviews),
+          );
+        },
+        err => console.error(err),
+      );
   }, []);
 
   const handleClickOpen = () => setModalOpen(true);
@@ -172,7 +171,7 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
         <Grid container spacing={6}>
           <Grid item container md={6} direction="column">
             <Grid item>
-              <CommentForm />
+              <CommentForm bookId={bookId} currentUid={user?.uid} />
             </Grid>
             <Grid
               container
@@ -183,7 +182,7 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
               {reviews ? (
                 reviews.length ? (
                   reviews.map(({ user: reviewUser, rating, content }, idx) => (
-                    <Grid key={idx} item>
+                    <Grid key={idx} item container>
                       <Review
                         user={reviewUser}
                         rating={rating}

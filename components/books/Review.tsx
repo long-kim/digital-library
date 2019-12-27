@@ -43,12 +43,12 @@ const Review: React.FC<IReviewProps> = ({ user, rating, content }) => {
     <Grid className={classes.root} container direction="column">
       <Grid item container direction="row">
         <Grid item>
-          <Avatar className={classes.avatar} src={user.photoURL} />
+          <Avatar className={classes.avatar} src={user?.photoURL} />
         </Grid>
         <Grid item>
           <Grid item>
-            <Link href="/users/[uid]" as={`/users/${user.uid}`}>
-              <Typography variant="h6">{user.fullName}</Typography>
+            <Link href="/users/[uid]" as={`/users/${user?.uid}`}>
+              <Typography variant="h6">{user?.fullName}</Typography>
             </Link>
             <Rating readOnly value={rating} size="small" />
           </Grid>
