@@ -44,7 +44,7 @@ interface ITabPanelProps {
   value: number;
 }
 
-const TabPanel: React.FC<ITabPanelProps> = ({ index, value, children }) => {
+export const TabPanel: React.FC<ITabPanelProps> = ({ index, value, children }) => {
   const classes = useStyles();
   return (
     <React.Fragment>

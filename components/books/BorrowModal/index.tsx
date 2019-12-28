@@ -13,14 +13,15 @@ import {
 import { createStyles, makeStyles } from '@material-ui/styles';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { from, throwError } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
 import { catchError, map, tap } from 'rxjs/operators';
+import AppContext from '../../../context/AppContext';
 import { firebaseConfig } from '../../../firebase/config';
 import AddToCartSnackbar from '../../checkout/AddToCartSnackbar';
 import { IUser } from '../interfaces';
 import BorrowItem from './BorrowItem';
-import { CART_LOCAL_STORAGE_KEY } from '../../checkout/constants';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,14 +51,18 @@ const BorrowModal: React.FC<IBorrowModalProps> = ({
 }) => {
   const [bookLenders, setBookLenders] = useState<BookLender[] | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [checkedLenders, setCheckedLenders] = useState<string[]>([]);
+  const context = useContext(AppContext);
   const classes = useStyles();
+
+  let db: firebase.firestore.Firestore;
 
   useEffect(() => {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
 
-    const db = firebase.firestore();
+    db = firebase.firestore();
     from(
       db
         .collection('users')
@@ -74,18 +79,46 @@ const BorrowModal: React.FC<IBorrowModalProps> = ({
       .subscribe(lenders => setBookLenders(lenders));
   }, []);
 
-  const handleAddToCart = () => {
-    // TODO: Add to cart
-    const cartJSON = localStorage.getItem(CART_LOCAL_STORAGE_KEY);
-    if (cartJSON) {
-      const cart = JSON.parse(cartJSON);
-      localStorage.setItem(
-        CART_LOCAL_STORAGE_KEY,
-        JSON.stringify([...cart, 1]),
-      );
-    }
-    setSnackbarOpen(true);
-  };
+  const handleAddToCart = useCallback(
+    () =>
+      // TODO: Add to cart
+      ajax({
+        url: `/api/books/${bookId}/rent`,
+        method: 'post',
+        body: {
+          lenders: checkedLenders,
+          uid: context.user?.uid,
+        },
+      })
+        .pipe(
+          tap(res => console.log(res)),
+          catchError(err => throwError(err)),
+        )
+        .subscribe(
+          res => {
+            onClose();
+            setSnackbarOpen(true);
+          },
+          err => console.error(err),
+        ),
+    [checkedLenders],
+  );
+
+  const handleSelectLender = useCallback(
+    (value: string) => () => {
+      const currentIndex = checkedLenders.indexOf(value);
+      const newCheckedLenders = [...checkedLenders];
+
+      if (currentIndex === -1) {
+        newCheckedLenders.push(value);
+      } else {
+        newCheckedLenders.splice(currentIndex, 1);
+      }
+
+      setCheckedLenders(newCheckedLenders);
+    },
+    [checkedLenders],
+  );
 
   return (
     <React.Fragment>
@@ -105,6 +138,7 @@ const BorrowModal: React.FC<IBorrowModalProps> = ({
                 size="large"
                 fullWidth
                 onClick={handleAddToCart}
+                disabled={checkedLenders.length === 0}
               >
                 Thêm vào tủ sách
               </Button>
@@ -131,7 +165,12 @@ const BorrowModal: React.FC<IBorrowModalProps> = ({
                 </Grid>
                 <Grid className={classes.lenderListRoot} item component={List}>
                   {bookLenders.map(({ user }, idx) => (
-                    <BorrowItem key={idx} lender={user} />
+                    <BorrowItem
+                      key={idx}
+                      lender={user}
+                      checkedLenders={checkedLenders}
+                      handleToggle={handleSelectLender}
+                    />
                   ))}
                 </Grid>
               </Grid>

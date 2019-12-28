@@ -1,176 +1,195 @@
-import React from 'react';
-import { createStyles, makeStyles, withStyles } from '@material-ui/styles';
-import useFirebaseAuth from './hooks/useFirebaseAuth';
-import { firebaseConfig } from '../firebase/config';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@material-ui/core';
+import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import { NextPage } from 'next';
+import React, { useEffect, useState } from 'react';
+import { concat, forkJoin, from, of, throwError } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import {
+  catchError,
+  defaultIfEmpty,
+  flatMap,
+  map,
+  merge,
+  take,
+  tap,
+  throwIfEmpty,
+} from 'rxjs/operators';
 import Navbar from '../components/navbar/Navbar';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core';
-import Book from '../components/search/book';
+import { firebaseConfig } from '../firebase/config';
+import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
-const StyledTableCell = withStyles((theme: Theme) =>
+const useStyles = makeStyles(theme =>
   createStyles({
-    head: {
-      color: '#726969',
+    tableHead: {
       fontWeight: 'bold',
-      border: 'solid 1px #726969',
-    },
-    body: {
-      color: '#726969',
-      fontSize: 14,
-      border: 'solid 1px #726969',
-    },
-  }),
-)(TableCell);
-
-const StyledTableRow = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.background.default,
-      },
-    },
-  }),
-)(TableRow);
-
-const useStyles = makeStyles(() =>
-  createStyles({
-    root: {
-      // width: '100%',
-      overflowX: 'auto',
-      margin: '0 73px 47px 73px',
-      color: '#726969;',
-    },
-    table: {
-      minWidth: 650,
-    },
-    checkoutTitle: {
-      color: '#726969',
-      fontSize: '36px',
-      margin: '71px 0 31px 73px',
-    },
-    cart2Btn: {
-      textAlign: 'end',
-    marginRight: '73px'
-    },
-    cartBtn: {
-      width: '202px',
-      height: '35px',
-      borderRadius: '24px',
-      border: 'solid 1px #8d8585',
-      backgroundColor: '#8d8585',
-      color: '#ffffff',
-      fontSize: '14px',
-    },
-    cartMiss: {
-      margin: '55px 0 31px 73px',
-      fontSize: '27px',
-      fontWeight: 'bold',
-      color: '#3b3b3b',
-      opacity: '0.8'
-    },
-    searchDisplayBook: {
-      display: 'grid',
-      gridTemplateColumns: 'auto auto auto auto auto',
-      margin: '0 73px 54px 73px',
     },
   }),
 );
 
-let products = [
-  { name: 'Percy Jackson book', img: '/img/book1.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book2.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book3.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book4.jpeg' },
-  { name: 'Percy Jackson book', img: '/img/book5.jpeg' },
-  { name: 'Percy Jackson book', img: '/img/book6.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book7.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book8.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book1.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book2.jpg' }
-];
+export const StyledTableCell = withStyles(theme =>
+  createStyles({
+    head: {
+      fontWeight: 'bold',
+    },
+  }),
+)(TableCell);
 
-type IProps = {};
-
-function createData(
-  name: number,
-  calories: string,
-  fat: string,
-  carbs: string,
-) {
-  return { name, calories, fat, carbs };
-}
-
-const rows = [
-  createData(1, 'Harry Potter and The Goblet of Fire', 'Thịnh - 808', '5 ngày'),
-  createData(2, 'Percy Jackson and The lightning thef', 'An - 301', '2 ngày'),
-  // createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  // createData('Eclair', 262, 16.0, 24, 6.0),
-  // createData('Cupcake', 305, 3.7, 67, 4.3),
-  // createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
-
-const CheckOut: React.FC<IProps> = () => {
-  const classes = useStyles();
+const CheckOut: NextPage = () => {
   const [user, handleLogin, handleLogout] = useFirebaseAuth(firebaseConfig);
+  const [rentItems, setRentItems] = useState<any[] | null>(null);
+  const classes = useStyles();
 
-  const renderProduct = products.map((product: any, i) => {
-    let url;
-    url = '/display-product/' + product.name;
-    return <Book key={i} name={product.name} img={product.img} url={url} />;
-  });
+  useEffect(() => {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
+    if (user) {
+      from(
+        db
+          .collection('rents')
+          .where('to', '==', user.uid)
+          .where('status', '==', 0)
+          .get(),
+      )
+        .pipe(
+          map(snapshot => snapshot.docs),
+          map(docs => docs.map(doc => doc.data())),
+          flatMap(items =>
+            forkJoin(
+              ...items.map(item =>
+                forkJoin({
+                  data: of(item),
+                  user: from(
+                    db
+                      .collection('users')
+                      .where('uid', '==', item.from)
+                      .get(),
+                  ).pipe(
+                    map(fromRef => fromRef.docs?.[0]),
+                    map(lender => lender.data()),
+                  ),
+                  book: from(item.bookId.get()).pipe(
+                    map((book: firebase.firestore.DocumentSnapshot) =>
+                      book.data(),
+                    ),
+                  ),
+                }),
+              ),
+            ),
+          ),
+          defaultIfEmpty([]),
+          tap(items => console.log(items)),
+          catchError(err => throwError(err)),
+        )
+        .subscribe(
+          items => setRentItems(items),
+          err => console.error(err),
+        );
+    }
+  }, [user]);
 
   return (
-    <div>
-      <Navbar page={'/'} user={user} handleLogout={handleLogout} />
-      <div className={classes.checkoutTitle}>Giỏ hàng của tôi</div>
-      <Paper className={classes.root}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <StyledTableRow>
-              {/* <StyledTableCell>Dessert (100g serving)</StyledTableCell> */}
-              <StyledTableCell align="center">STT</StyledTableCell>
-              <StyledTableCell align="center">
-                Tên sách&nbsp;(g)
-              </StyledTableCell>
-              <StyledTableCell align="center">
-                Người cho mượn&nbsp;(g)
-              </StyledTableCell>
-              <StyledTableCell align="center">
-                Thời gian cho mượn&nbsp;(g)
-              </StyledTableCell>
-            </StyledTableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map(row => (
-              <StyledTableRow key={row.name}>
-                {/* <StyledTableCell component="th" scope="row">
-                {row.name}
-              </StyledTableCell> */}
-                <StyledTableCell align="center">{row.name}</StyledTableCell>
-                <StyledTableCell align="center">{row.calories}</StyledTableCell>
-                <StyledTableCell align="center">{row.fat}</StyledTableCell>
-                <StyledTableCell align="center">{row.carbs}</StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Paper>
-
-      <div className={classes.cart2Btn}>
-        <button className={classes.cartBtn}>TIẾP TỤC TÌM SÁCH</button>
-        <button className={classes.cartBtn}>ĐĂNG KÝ MƯỢN</button>
-      </div>
-    <div className={classes.cartMiss}>
-      Bạn có thể đã bỏ lỡ...
-    </div>
-    <div className={classes.searchDisplayBook}>{renderProduct}</div>
-    </div>
-
+    <React.Fragment>
+      <Navbar user={user} handleLogout={handleLogout} />
+      <Container>
+        <Box my={4}>
+          <Grid container direction="column" spacing={4}>
+            <Grid item component={Box} px={2} mt={4}>
+              <Typography variant="h5">Giỏ hàng của tôi</Typography>
+            </Grid>
+            <Grid
+              item
+              component={Box}
+              padding={2}
+              bgcolor="grey.100"
+              borderRadius="borderRadius"
+            >
+              {rentItems ? (
+                <TableContainer component={Paper}>
+                  <Table aria-label="checkout table">
+                    <TableHead classes={{ root: classes.tableHead }}>
+                      <TableRow>
+                        <StyledTableCell>STT</StyledTableCell>
+                        <StyledTableCell align="center">
+                          Tên sách
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          Người cho mượn
+                        </StyledTableCell>
+                        <StyledTableCell align="right">
+                          Thời gian cho mượn
+                        </StyledTableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {rentItems.length ? (
+                        rentItems.map(({ data, user: lender, book }, idx) => (
+                          <TableRow key={idx}>
+                            <TableCell>{idx + 1}</TableCell>
+                            <TableCell align="center">{book.name}</TableCell>
+                            <TableCell align="center">
+                              {lender.fullName}
+                            </TableCell>
+                            <TableCell align="right">{`${data.duration} ngày`}</TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={4} align="center">
+                            Bạn chưa có cuốn sách nào trong giỏ hàng.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <Box display="flex" justifyContent="center" my={4}>
+                  <CircularProgress />
+                </Box>
+              )}
+            </Grid>
+            <Grid item container justify="flex-end" spacing={2}>
+              <Grid item>
+                <Button variant="outlined" color="primary">
+                  TIẾP TỤC TÌM SÁCH
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button variant="contained" color="primary">
+                  ĐĂNG KÝ MƯỢN
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Box>
+        <Box my={4}>
+          <Grid container direction="column" spacing={4}>
+            <Grid item component={Box} px={2} mt={4}>
+              <Typography variant="h5">Bạn có thể đã bỏ lỡ...</Typography>
+            </Grid>
+          </Grid>
+        </Box>
+      </Container>
+    </React.Fragment>
   );
 };
 

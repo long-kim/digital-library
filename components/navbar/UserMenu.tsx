@@ -39,6 +39,8 @@ const UserPopupMenu: React.FC<IUserPopupMenuProps> = ({
   const handleProfileClick = () =>
     router.push('/users/[uid]', `/users/${user.uid}`);
 
+  const handleBooksManagementClick = () => router.push('/books/manage');
+
   return (
     <Menu
       anchorEl={anchorEl}
@@ -49,6 +51,7 @@ const UserPopupMenu: React.FC<IUserPopupMenuProps> = ({
       getContentAnchorEl={null}
     >
       <MenuItem onClick={handleProfileClick}>Trang của tôi</MenuItem>
+      <MenuItem onClick={handleBooksManagementClick}>Quản lí sách</MenuItem>
       <MenuItem onClick={handleLogoutClick}>Đăng xuất</MenuItem>
     </Menu>
   );
