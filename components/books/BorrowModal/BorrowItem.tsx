@@ -5,34 +5,62 @@ import {
   ListItemAvatar,
   ListItemSecondaryAction,
   ListItemText,
+  Checkbox,
+  FormControlLabel,
 } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+import Link from '../../Link';
 import { IUser } from '../interfaces';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles(theme =>
   createStyles({
     root: {
-      paddingLeft: 0,
+      borderRadius: theme.shape.borderRadius,
     },
   }),
 );
 
 interface IBorrowItemProps {
-  user: IUser;
+  lender: IUser;
+  checkedLenders: string[];
+  handleToggle: (value: string) => () => void;
 }
 
-const BorrowItem: React.FC<IBorrowItemProps> = ({ user }) => {
+const BorrowItem: React.FC<IBorrowItemProps> = ({
+  lender,
+  handleToggle,
+  checkedLenders,
+}) => {
   const classes = useStyles();
 
   return (
-    <ListItem classes={{ root: classes.root }}>
+    <ListItem
+      button
+      component={Link}
+      href="/users/[uid]"
+      as={`/users/${lender.uid}`}
+      classes={{ root: classes.root }}
+    >
       <ListItemAvatar>
-        <Avatar src={user.imageURL} />
+        <Avatar src={lender.photoURL} />
       </ListItemAvatar>
-      <ListItemText primary={user.name} secondary="Gold Member" />
+      <ListItemText
+        primary={lender.fullName}
+        secondary={lender.room ?? 'Không có thông tin'}
+      />
       <ListItemSecondaryAction>
-        <Button color="primary">Hỏi mượn</Button>
+        <FormControlLabel
+          control={
+            <Checkbox
+              edge="start"
+              color="primary"
+              onChange={handleToggle(lender.uid)}
+              checked={checkedLenders.indexOf(lender.uid) !== -1}
+            />
+          }
+          label="Hỏi mượn"
+        />
       </ListItemSecondaryAction>
     </ListItem>
   );

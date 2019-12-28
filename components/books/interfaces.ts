@@ -1,8 +1,9 @@
 import { firestore } from 'firebase';
 
 export interface IUser {
-  name: string;
-  imageURL?: string;
+  fullName: string;
+  photoURL?: string;
+  [field: string]: any;
 }
 
 export interface IBook extends firestore.DocumentData {
@@ -12,5 +13,5 @@ export interface IBook extends firestore.DocumentData {
   rating: number;
   cate: string[];
   id: string;
-  img: string;
+  img: string[];
 }

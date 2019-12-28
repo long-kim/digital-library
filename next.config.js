@@ -2,6 +2,7 @@ const withSass = require('@zeit/next-sass');
 const withPlugins = require('next-compose-plugins');
 const withOptimizedImages = require('next-optimized-images');
 const withCSS = require('@zeit/next-css');
+const withBundleAnalyzer = require('@next/bundle-analyzer');
 
 module.exports = withPlugins(
   [
@@ -30,6 +31,7 @@ module.exports = withPlugins(
         },
       },
     ],
+    [withBundleAnalyzer({ enabled: process.env.ANALYZE === 'true' })],
   ],
   {
     target: 'experimental-serverless-trace',

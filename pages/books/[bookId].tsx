@@ -1,56 +1,37 @@
-import { Container, Fab, Grid, Theme, Typography } from '@material-ui/core';
+import {
+  Box,
+  CircularProgress,
+  Container,
+  Fab,
+  Grid,
+  Theme,
+  Typography,
+} from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
-import { createStyles, makeStyles } from '@material-ui/styles';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { NextPage } from 'next';
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { from, throwError } from 'rxjs';
+import { catchError, defaultIfEmpty, filter, map, tap } from 'rxjs/operators';
 import BookDetails from '../../components/books/BookDetails';
 import BookImageGallery from '../../components/books/BookImageGallery';
 import BorrowModal from '../../components/books/BorrowModal';
-import CommentForm from '../../components/books/CommentForm';
+// import CommentForm from '../../components/books/CommentForm';
 import { IBook } from '../../components/books/interfaces';
 import RelatedBook, {
   IRelatedBookProps,
 } from '../../components/books/RelatedBook';
-import Review, { IReviewProps } from '../../components/books/Review';
+import { IReviewProps } from '../../components/books/Review';
 import Navbar from '../../components/navbar/Navbar';
 import { firebaseConfig } from '../../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
-const reviews: IReviewProps[] = [
-  {
-    user: {
-      name: 'Thinh Tran',
-      imageURL:
-        'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-    },
-    review:
-      'However, they commented that it did tend to lag, especially at the end where two bad guys',
-    rating: 4,
-  },
-  {
-    user: {
-      name: 'Thinh Tran',
-      imageURL:
-        'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-    },
-    review:
-      'However, they commented that it did tend to lag, especially at the end where two bad guys',
-    rating: 4,
-  },
-  {
-    user: {
-      name: 'Thinh Tran',
-      imageURL:
-        'https://scontent.fsgn1-1.fna.fbcdn.net/v/t1.0-9/s960x960/74443688_2387688291469423_6786064012900564992_o.jpg?_nc_cat=100&_nc_ohc=rMsccGHD9w0AQnU7Vlu8mAB5VRcugTbk-TA09KLB3spkfF8Xc31qCVF7g&_nc_ht=scontent.fsgn1-1.fna&oh=99a82a9d3d8844fbf955af48ce53421a&oe=5E7EF970',
-    },
-    review:
-      'However, they commented that it did tend to lag, especially at the end where two bad guys',
-    rating: 4,
-  },
-];
+const Review = dynamic(() => import('../../components/books/Review'));
+const CommentForm = dynamic(() => import('../../components/books/CommentForm'));
 
 const relatedList: IRelatedBookProps[] = [
   {
@@ -114,57 +95,90 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-interface IBookShowProps {
+interface BookShowProps {
   book?: IBook | undefined;
-  bookId?: any;
+  bookId?: string;
 }
 
-const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
-  const [user, , handleLogout] = useFirebaseAuth(firebaseConfig);
-  const [response, setResponse] = useState<Array<any>>([]);
+const BookShow: NextPage<BookShowProps> = ({ book, bookId }) => {
+  const [user, _, handleLogout] = useFirebaseAuth(firebaseConfig);
   const [modalOpen, setModalOpen] = useState(false);
+  const [reviews, setReviews] = useState<IReviewProps[] | null>(null);
+  const [relatedBooks, setRelatedBooks] = useState<any[] | null>(null);
+
   const classes = useStyles();
+
+  useEffect(() => {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    const db = firebase.firestore();
+    return db
+      .collection('reviews')
+      .where('book', '==', bookId)
+      .onSnapshot(
+        snapshot =>
+          Promise.all(
+            snapshot.docs.map(doc => {
+              const userRef: firebase.firestore.DocumentReference = doc.get(
+                'user',
+              );
+              return userRef?.get().then(userSnapshot => ({
+                ...doc.data(),
+                user: userSnapshot.data(),
+              }));
+            }),
+          )
+            .then((fetchedReviews: IReviewProps[]) =>
+              setReviews(fetchedReviews),
+            )
+            .catch(error => {
+              throw error;
+            }),
+        err => console.error(err),
+      );
+  }, []);
+
+  useEffect(() => {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    const db = firebase.firestore();
+    if (book) {
+      const relatedBooksSubscription = from(
+        db
+          .collection('books')
+          .where('cate', 'array-contains', book.cate[0])
+          .limit(6)
+          .get(),
+      )
+        .pipe(
+          map(snapshot => snapshot.docs),
+          map(docs => docs.filter(doc => doc.id !== bookId)),
+          map(docs => docs.map(doc => ({ id: doc.id, data: doc.data() }))),
+          tap(docs => console.log(docs)),
+          defaultIfEmpty([]),
+          catchError(err => throwError(err)),
+        )
+        .subscribe(
+          related => setRelatedBooks(related),
+          err => console.error(err),
+        );
+
+      return () => relatedBooksSubscription.unsubscribe();
+    }
+  }, [bookId]);
 
   const handleClickOpen = () => setModalOpen(true);
 
   const handleClose = () => setModalOpen(false);
 
-  // console.log(book && book.cate[0]);
-
-  const getCateItemList = () => {
-    // Initialize DB and Storage
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
-    // const storageRef = firebase.storage().ref();
-    let data: Array<any> = [];
-
-    if (book) {
-      db.collection('books')
-        .where('cate', 'array-contains', book.cate[0])
-        .limit(6)
-        .get()
-        .then(snapshot => {
-          snapshot.forEach(doc => {
-            if (doc.id !== bookId) {
-              data.push({
-                data: doc.data(),
-                id: doc.id,
-              });
-            }
-          });
-          setResponse(data);
-        });
-    }
-  };
-
-  useEffect(getCateItemList, [bookId]);
-
   return (
     <React.Fragment>
       <Head>
-        <title>Trang chủ | Digital Library</title>
+        <title>{`${book?.name} | Digital Library`}</title>
       </Head>
       <Navbar user={user} handleLogout={handleLogout} />
       <Container className={classes.bookShowcase} maxWidth="lg">
@@ -185,24 +199,48 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
                 />
                 Thêm vào giỏ
               </Fab>
-              <BorrowModal onClose={handleClose} open={modalOpen} />
+              <BorrowModal
+                onClose={handleClose}
+                open={modalOpen}
+                bookId={bookId}
+              />
             </Grid>
           </Grid>
           <Grid item xs={6}>
-            <BookImageGallery book={book} />
+            <BookImageGallery images={book?.img} />
           </Grid>
         </Grid>
         <Grid item className={classes.linebreak} />
         <Grid container spacing={6}>
           <Grid item container md={6} direction="column">
             <Grid item>
-              <CommentForm />
+              <CommentForm bookId={bookId} currentUid={user?.uid} />
             </Grid>
-            {reviews.map(({ user: reviewUser, rating, review }, idx) => (
-              <Grid key={idx} item>
-                <Review user={reviewUser} rating={rating} review={review} />
-              </Grid>
-            ))}
+            <Grid container component={Box} justifyContent="center">
+              {reviews ? (
+                reviews.length ? (
+                  reviews.map(({ user: reviewUser, rating, content }, idx) => (
+                    <Grid key={idx} item container>
+                      <Review
+                        user={reviewUser}
+                        rating={rating}
+                        content={content}
+                      />
+                    </Grid>
+                  ))
+                ) : (
+                  <Box marginTop={2}>
+                    <Typography variant="body1">
+                      Chưa có review nào. Bạn có muốn viết?
+                    </Typography>
+                  </Box>
+                )
+              ) : (
+                <Box alignSelf="center" marginTop={6}>
+                  <CircularProgress />
+                </Box>
+              )}
+            </Grid>
           </Grid>
           <Grid item container md={6} direction="column">
             <Grid item>
@@ -214,17 +252,25 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
               container
               spacing={3}
             >
-              {response.map((book : IBook, i:any) => (
-                <Grid key={i} item md={6} lg={4}>
-                  <RelatedBook id={book.id} name={book.data.name} coverURL={book.data.img[0]} />
-                </Grid>
-              ))}
+              {relatedBooks ? (
+                relatedBooks.map((relatedBook, idx) => (
+                  <Grid key={idx} item md={6} lg={4}>
+                    <RelatedBook
+                      id={relatedBook.id}
+                      name={relatedBook.data.name}
+                      coverURL={relatedBook.data.img[0]}
+                    />
+                  </Grid>
+                ))
+              ) : (
+                <Box display="flex" justifyContent="center" width="100%" mt={8}>
+                  <CircularProgress />
+                </Box>
+              )}
             </Grid>
           </Grid>
         </Grid>
       </Container>
-      {/* <BookDetails /> */}
-      {/* <Footer /> */}
     </React.Fragment>
   );
 };
@@ -242,9 +288,9 @@ BookShow.getInitialProps = async ({ query }) => {
     .doc(bookId as string)
     .get();
 
-  const book = bookSnapshot.data() as IBook;
+  const { reviews, ...book } = bookSnapshot.data() as IBook;
 
-  return { book,bookId };
+  return { book, bookId: bookId as string };
 };
 
 export default BookShow;

@@ -1,19 +1,33 @@
-import { Button, ButtonBase, fade, Grid } from '@material-ui/core';
+import {
+  Avatar,
+  Button,
+  ButtonBase,
+  CircularProgress,
+  fade,
+  Grid,
+} from '@material-ui/core';
 import { createStyles, Theme } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
-import MuiLink from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import NextLink from 'next/link';
-import React from 'react';
-import Footer from '../components/footer/Footer';
+import React, { useEffect, useState } from 'react';
+import { concat, from, throwError } from 'rxjs';
+import {
+  catchError,
+  concatMap,
+  defaultIfEmpty,
+  flatMap,
+  map,
+  tap,
+} from 'rxjs/operators';
 import ButtonLink from '../components/index/ButtonLink';
-import Link from '../components/Link';
 import Navbar from '../components/navbar/Navbar';
-import ProTip from '../components/ProTip';
 import { firebaseConfig } from '../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
@@ -54,6 +68,10 @@ const useStyles = makeStyles((theme: Theme) =>
         backgroundColor: fade(theme.palette.common.white, 0.1),
       },
     },
+    profileButton: {
+      borderRadius: '50rem',
+      padding: theme.spacing(1, 4),
+    },
     booksContainer: {
       paddingBottom: theme.spacing(6),
     },
@@ -68,21 +86,19 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     bookImageButtonRoot: {
       height: '100%',
+      width: '100%',
     },
     bookImage: {
       margin: theme.spacing(3),
-      height: 350,
+      height: 380,
       borderRadius: theme.shape.borderRadius,
-      boxShadow: theme.shadows[1],
+      boxShadow: theme.shadows[2],
       overflow: 'hidden',
-      '& img': {
-        height: '100%',
-        maxWidth: '100%',
-        objectFit: 'cover',
-        [theme.breakpoints.up('sm')]: {
-          width: '100%',
-        },
-      },
+      width: '100%',
+    },
+    bookAvatar: {
+      height: 380,
+      minWidth: '100%',
     },
     bookTitle: {
       fontWeight: 'bold',
@@ -119,7 +135,7 @@ interface IBookItemProps {
   product: {
     id: string | number;
     name: string;
-    img: string;
+    img: string[];
   };
 }
 
@@ -136,12 +152,16 @@ const BookItem: React.FC<IBookItemProps> = ({ product: { name, img, id } }) => {
         <Grid className={classes.bookImage} item>
           <NextLink href="/books/[bookId]" as={`/books/${id}`} passHref>
             <ButtonBase className={classes.bookImageButtonRoot}>
-              <img src={img} />
+              <Avatar
+                className={classes.bookAvatar}
+                src={img?.[0]}
+                variant="rounded"
+              />
             </ButtonBase>
           </NextLink>
         </Grid>
         <Grid item>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h6" align="center" gutterBottom>
             {name}
           </Typography>
         </Grid>
@@ -159,9 +179,38 @@ const BookItem: React.FC<IBookItemProps> = ({ product: { name, img, id } }) => {
   );
 };
 
-const Index: NextPage<IHomeProps> = ({ pathname, books }) => {
+const Index: NextPage<IHomeProps> = ({ pathname }) => {
   const classes = useStyles();
-  const [user, handleLogin, handleLogout] = useFirebaseAuth(firebaseConfig);
+  const [user, , handleLogout] = useFirebaseAuth(firebaseConfig);
+  const [books, setBooks] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
+    const booksSubscription = from(
+      db
+        .collection('books')
+        .orderBy('rating', 'desc')
+        .limit(8)
+        .get(),
+    )
+      .pipe(
+        map(items => items.docs),
+        map(docs => docs.map(doc => ({ id: doc.id, ...doc.data() }))),
+        tap(_ => console.log(_)),
+        defaultIfEmpty([]),
+        catchError(err => throwError(err)),
+      )
+      .subscribe(
+        newBooks => setBooks(newBooks),
+        err => console.error(err),
+      );
+
+    return () => booksSubscription.unsubscribe();
+  }, [user]);
 
   return (
     <React.Fragment>
@@ -206,14 +255,41 @@ const Index: NextPage<IHomeProps> = ({ pathname, books }) => {
               Chào mừng bạn đã đến với thư viện điện tử do nhóm sinh viên đến từ
               trường ĐH Bách Khoa HCM thực hiện
             </Grid>
-            <Grid item>
-              <ButtonLink
-                className={classes.joinButton}
-                variant="outlined"
-                href="/signup"
-              >
-                Tham gia ngay
-              </ButtonLink>
+            <Grid item container justify="center" spacing={2}>
+              {user ? (
+                <React.Fragment>
+                  <Grid item>
+                    <ButtonLink
+                      className={classes.joinButton}
+                      variant="outlined"
+                      href="/category"
+                    >
+                      Đi tới thư viện
+                    </ButtonLink>
+                  </Grid>
+                  <Grid item>
+                    <ButtonLink
+                      className={classes.profileButton}
+                      variant="contained"
+                      color="primary"
+                      href="/users/[uid]"
+                      as={`/users/${user.uid}`}
+                    >
+                      Trang của tôi
+                    </ButtonLink>
+                  </Grid>
+                </React.Fragment>
+              ) : (
+                <Grid item>
+                  <ButtonLink
+                    className={classes.joinButton}
+                    variant="outlined"
+                    href="/signup"
+                  >
+                    Tham gia ngay
+                  </ButtonLink>
+                </Grid>
+              )}
             </Grid>
           </Grid>
         </Container>
@@ -226,65 +302,18 @@ const Index: NextPage<IHomeProps> = ({ pathname, books }) => {
             </Typography>
           </Grid>
           <Grid item container spacing={4}>
-            {books &&
-              books.map((book, idx) => <BookItem key={idx} product={book} />)}
+            {books ? (
+              books.map((book, idx) => <BookItem key={idx} product={book} />)
+            ) : (
+              <Box display="flex" justifyContent="center" my={4} width="100%">
+                <CircularProgress />
+              </Box>
+            )}
           </Grid>
         </Grid>
       </Container>
-      {/* <Footer></Footer> */}
     </React.Fragment>
   );
-};
-
-Index.getInitialProps = async ctx => {
-  // TODO: pull in actual data
-  const products = [
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book1.jpg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book2.jpg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book3.jpg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book4.jpeg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book5.jpeg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book6.jpg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book7.jpg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book8.jpg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-  ];
-
-  return {
-    pathname: ctx.pathname,
-    books: products,
-  };
 };
 
 export default Index;

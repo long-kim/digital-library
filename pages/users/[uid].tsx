@@ -1,16 +1,28 @@
 import { Container, Grid } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles} from '@material-ui/core/styles';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { NextPage } from 'next';
+import dynamic from 'next/dynamic';
+import Error from 'next/error';
+import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
+import { forkJoin, from, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import Navbar from '../../components/navbar/Navbar';
-import MyFriends from '../../components/users/MyFriends';
+import { Book } from '../../components/users/BookItem';
 import ProfileInfo from '../../components/users/ProfileInfo';
 import { firebaseConfig } from '../../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
-const useStyles = makeStyles((theme: Theme) =>
+const MyFriends = dynamic(() => import('../../components/users/MyFriends'));
+const MyBooks = dynamic(() => import('../../components/users/MyBooks'));
+const BorrowedBooks = dynamic(() =>
+  import('../../components/users/BorrowedBooks'),
+);
+const Discovery = dynamic(() => import('../../components/users/Discovery'));
+
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       color: '#726969',
@@ -32,7 +44,7 @@ interface ITabPanelProps {
   value: number;
 }
 
-const TabPanel: React.FC<ITabPanelProps> = ({ index, value, children }) => {
+export const TabPanel: React.FC<ITabPanelProps> = ({ index, value, children }) => {
   const classes = useStyles();
   return (
     <React.Fragment>
@@ -45,78 +57,160 @@ const TabPanel: React.FC<ITabPanelProps> = ({ index, value, children }) => {
   );
 };
 
-interface IProfileProps {
-  profile: any;
-  uid: string;
+interface ProfileProps {
+  profile?: any;
+  uid?: string;
+  error?: any;
 }
 
-const Profile: NextPage<IProfileProps> = ({ profile, uid }) => {
-  const [user, handleLogin, handleLogout] = useFirebaseAuth(firebaseConfig);
+const Profile: NextPage<ProfileProps> = ({ profile, uid, error }) => {
+  const [user, , handleLogout] = useFirebaseAuth(firebaseConfig);
   const [tab, setTab] = useState(0);
+
+  let db: firebase.firestore.Firestore;
+
   const [
     profileData,
     setProfileData,
   ] = useState<firebase.firestore.DocumentData | null>(null);
-  const [friends, setFriends] = useState<
-    Array<firebase.firestore.DocumentData | undefined>
-  >();
-  const classes = useStyles();
+
+  const [friends, setFriends] = useState<Array<
+    firebase.firestore.DocumentData | undefined
+  > | null>(null);
+  const [books, setBooks] = useState<Array<Book | undefined>>();
+  const [borrowed, setBorrowed] = useState<Array<Book | undefined>>([]);
+
+  const [weeklyBooks, setWeeklyBooks] = useState<Book[] | null>(null);
+  const [recommended, setRecommended] = useState<Book[] | null>(null);
 
   useEffect(() => {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
+    db = firebase.firestore();
+
+    db.collection('books')
+      .limit(3)
+      .orderBy('rating', 'desc')
+      .get()
+      .then(snapshot =>
+        snapshot.docs.map(book => ({ id: book.id, data: book.data() })),
+      )
+      .then(newWeeklyBooks => setWeeklyBooks(newWeeklyBooks))
+      .catch(e => console.error(e));
+
+    db.collection('books')
+      .limit(3)
+      .where('cate', 'array-contains', 'Tiểu thuyết')
+      .orderBy('rating', 'desc')
+      .get()
+      .then(snapshot =>
+        snapshot.docs.map(book => ({ id: book.id, data: book.data() })),
+      )
+      .then(newRecommended => setRecommended(newRecommended))
+      .catch(e => console.error(e));
   }, []);
 
   useEffect(() => {
-    const getProfile = async () => {
-      const db = firebase.firestore();
-      const userSnapshot = await db
-        .collection('users')
-        .where('uid', '==', uid as string)
-        .get();
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    db = firebase.firestore();
 
-      const [firebaseProfile] = userSnapshot.docs;
-
-      setProfileData(firebaseProfile.data());
-    };
-    getProfile();
+    db.collection('users')
+      .where('uid', '==', uid as string)
+      .get()
+      .then(userSnapshot => userSnapshot.docs?.[0])
+      .then(firebaseProfile => setProfileData(firebaseProfile.data()))
+      .catch(e => {
+        console.error(e);
+      });
   }, [uid]);
 
   useEffect(() => {
     const friendRefs: firebase.firestore.DocumentReference[] =
-      profileData?.friends || [];
+      profileData?.friends ?? [];
+    const bookRefs: firebase.firestore.DocumentReference[] =
+      profileData?.books ?? [];
+    const borrowedRefs: firebase.firestore.DocumentReference[] =
+      profileData?.borrowed ?? [];
+
+    forkJoin(
+      ...friendRefs.map(friendRef =>
+        from(friendRef.get()).pipe(
+          map(snapshot => snapshot.data()),
+          catchError(e => throwError(e)),
+        ),
+      ),
+    ).subscribe(
+      newFriends => setFriends(newFriends),
+      () => setFriends([]),
+    );
 
     Promise.all([
-      ...friendRefs.map(async friendRef => {
+      ...bookRefs.map(async bookRef => {
         try {
-          const friendDocSnapshot = await friendRef.get();
-          return friendDocSnapshot.data();
+          const bookDocSnapShot = await bookRef.get();
+          return { id: bookRef.id, data: bookDocSnapShot.data() };
         } catch (error) {
           return undefined;
         }
       }),
-    ]).then(newFriends => setFriends(newFriends));
+    ]).then(newBooks => setBooks(newBooks));
+
+    Promise.all([
+      ...borrowedRefs.map(borrowedRef =>
+        borrowedRef
+          .get()
+          .then(snapshot => ({ id: borrowedRef.id, data: snapshot.data() }))
+          .catch(() => undefined),
+      ),
+    ]).then(newBorrowed => setBorrowed(newBorrowed));
   }, [profileData]);
 
   return (
     <React.Fragment>
-      <Navbar user={user} handleLogout={handleLogout} />
-      <Container>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={4}>
-            <ProfileInfo tab={tab} setTab={setTab} profile={profile} />
-          </Grid>
-          <Grid item xs={12} md={8}>
-            <TabPanel value={tab} index={0}>
-              <MyFriends friends={friends} />
-            </TabPanel>
-            <TabPanel value={tab} index={1}>
-              abc2
-            </TabPanel>
-          </Grid>
-        </Grid>
-      </Container>
+      {error ? (
+        <Error statusCode={500} />
+      ) : (
+        <React.Fragment>
+          <Head>
+            <title>{`Profile | ${process.env.APP_NAME}`}</title>
+          </Head>
+          <Navbar user={user} handleLogout={handleLogout} />
+          <Container>
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={4}>
+                <ProfileInfo
+                  tab={tab}
+                  setTab={setTab}
+                  profile={profile}
+                  own={user?.uid === uid}
+                  of={profileData?.fullName}
+                />
+              </Grid>
+              <Grid item xs={12} md={8}>
+                <TabPanel value={tab} index={0}>
+                  <MyFriends friends={friends} />
+                </TabPanel>
+                <TabPanel value={tab} index={1}>
+                  <Discovery weekly={weeklyBooks} recommended={recommended} />
+                </TabPanel>
+                <TabPanel value={tab} index={2}>
+                  <MyBooks
+                    books={books}
+                    own={user?.uid === uid}
+                    of={profileData?.fullName}
+                  />
+                </TabPanel>
+                <TabPanel value={tab} index={3}>
+                  <BorrowedBooks books={borrowed} />
+                </TabPanel>
+              </Grid>
+            </Grid>
+          </Container>
+        </React.Fragment>
+      )}
     </React.Fragment>
   );
 };
@@ -129,24 +223,29 @@ Profile.getInitialProps = async ({ query }) => {
   }
 
   const db = firebase.firestore();
-  const userSnapshot = await db
-    .collection('users')
-    .where('uid', '==', uid as string)
-    .get();
+  try {
+    const userSnapshot = await db
+      .collection('users')
+      .where('uid', '==', uid as string)
+      .get();
 
-  const [profile] = userSnapshot.docs;
+    const [profile] = userSnapshot.docs;
 
-  const profileData = profile.data();
+    const profileData = profile.data();
 
-  return {
-    uid: uid as string,
-    profile: {
-      ...profileData,
-      reviews: profileData.reviews?.length || 0,
-      books: profileData.books?.length || 0,
-      friends: profileData.friends?.length || 0,
-    },
-  };
+    return {
+      uid: uid as string,
+      profile: {
+        ...profileData,
+        reviews: profileData.reviews?.length || 0,
+        books: profileData.books?.length || 0,
+        friends: profileData.friends?.length || 0,
+        borrowed: (profileData.borrowed ?? []).length,
+      },
+    };
+  } catch (error) {
+    return { error };
+  }
 };
 
 export default Profile;

@@ -43,9 +43,18 @@ const useStyles = makeStyles(theme =>
       minHeight: 48,
     },
     tabIndicator: {
-      width: 3,
+      width: 2,
       left: 0,
       right: 'unset',
+      display: 'flex',
+      alignItems: 'center',
+      backgroundColor: 'transparent',
+      '& > div': {
+        maxHeight: 30,
+        height: '100%',
+        backgroundColor: '#726969',
+        width: 2,
+      },
     },
     tabSelected: {
       fontWeight: 'bold',
@@ -53,7 +62,7 @@ const useStyles = makeStyles(theme =>
     tabWrapper: {
       flexDirection: 'row',
       justifyContent: 'flex-start',
-      paddingLeft: theme.spacing(1.5),
+      paddingLeft: theme.spacing(1.25),
       '& svg': {
         marginRight: '1.4rem',
         marginBottom: '0 !important',
@@ -72,7 +81,7 @@ const tabs = [
     icon: <SearchIcon />,
   },
   {
-    label: 'Sách của tôi',
+    label: 'Sách',
     icon: <MenuBookRoundedIcon />,
   },
   {
@@ -99,6 +108,7 @@ const ProfileTabs: React.FC<IProfileTabsProps> = ({ tab, setTab }) => {
       value={tab}
       onChange={handleChange}
       indicatorColor="primary"
+      TabIndicatorProps={{ children: <div /> }}
     >
       {tabs.map((tab, idx) => (
         <Tab
@@ -121,6 +131,8 @@ interface IProfileInfoProps {
   profile: any;
   tab: number;
   setTab: React.Dispatch<React.SetStateAction<number>>;
+  own?: boolean;
+  of?: string;
 }
 
 const ProfileInfo: React.FC<IProfileInfoProps> = ({ profile, tab, setTab }) => {
@@ -162,7 +174,7 @@ const ProfileInfo: React.FC<IProfileInfoProps> = ({ profile, tab, setTab }) => {
           </Grid>
           <Grid item xs={4} container direction="column" alignItems="center">
             <Typography className={classes.profileStat} variant="h6">
-              2
+              {profile.borrowed}
             </Typography>
             <Typography variant="subtitle2">Đã mượn</Typography>
           </Grid>

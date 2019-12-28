@@ -24,12 +24,12 @@ const useStyles = makeStyles((theme: Theme) =>
       bottom: '0',
       zIndex: 2,
       height: 60,
-      backdropFilter: 'blur(2px)',
+      backdropFilter: 'blur(3px)',
       borderRadius: theme.shape.borderRadius,
     },
     addToCartButton: {
       width: '100%',
-      backgroundColor: fade(theme.palette.common.black, 0.4),
+      backgroundColor: fade(theme.palette.common.black, 0.5),
       color: '#bcb6b6',
       borderBottomLeftRadius: theme.shape.borderRadius,
       borderBottomRightRadius: theme.shape.borderRadius,
@@ -75,7 +75,9 @@ const RelatedBook: React.FC<IRelatedBookProps> = ({ id, coverURL, name }) => {
           </Grid>
         </ButtonBase>
       </Link>
-      <Typography variant="h6">{name}</Typography>
+      <Typography variant="h6" align="center">
+        {name}
+      </Typography>
     </Grid>
   );
 };

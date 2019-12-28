@@ -1,18 +1,21 @@
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
+import 'firebase/auth';
 import App from 'next/app';
 import Head from 'next/head';
 import { Router } from 'next/router';
 import NProgress from 'nprogress';
 import React from 'react';
+import ContextWrapper from '../components/ContextWrapper';
 import Footer from '../components/footer/Footer';
+import { AppState } from '../context';
 import theme from '../theme';
 
 Router.events.on('routerChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
-export default class MyApp extends App {
+export default class MyApp extends App<{}, {}, AppState> {
   componentDidMount() {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side');
@@ -41,9 +44,11 @@ export default class MyApp extends App {
           `}</style>
         </Head>
         <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Component {...pageProps} />
-          <Footer />
+          <ContextWrapper>
+            <CssBaseline />
+            <Component {...pageProps} />
+            <Footer />
+          </ContextWrapper>
         </ThemeProvider>
       </React.Fragment>
     );
