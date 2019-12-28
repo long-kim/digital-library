@@ -41,7 +41,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
         flatMap(rentRef =>
           from(
             rentRef.set({
-              bookId,
+              bookId: db.doc(`books/${bookId}`),
               borrowAt: firebase.firestore.Timestamp.fromDate(new Date()),
               duration: 5,
               from: lender,

@@ -41,6 +41,17 @@ export const getDueDate = (
   return borrowDate.setDate(borrowDate.getDate() + duration);
 };
 
+export const getStatus = (status: RentStatus) => {
+  switch (status) {
+    case RentStatus.Pending:
+      return 'Đang chờ';
+    case RentStatus.Ongoing:
+      return 'Đang mượn';
+    case RentStatus.Overdue:
+      return 'Quá hạn';
+  }
+};
+
 const useStyles = makeStyles(theme =>
   createStyles({
     tab: {

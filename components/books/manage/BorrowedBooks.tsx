@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import moment from 'moment';
 import React, { useMemo } from 'react';
-import { getDueDate } from '../../../pages/books/manage';
+import { getDueDate, getStatus } from '../../../pages/books/manage';
 import { StyledTableCell } from '../../../pages/checkout';
 
 moment.locale('vi');
@@ -28,12 +28,14 @@ const BookRow: React.FC<{
     [data],
   );
 
+  const status = useMemo(() => getStatus(data.status), [data]);
+
   return (
     <TableRow>
       <TableCell>{idx + 1}</TableCell>
       <TableCell>{book.name}</TableCell>
       <TableCell align="center">{book.author}</TableCell>
-      <TableCell align="center">{data.status}</TableCell>
+      <TableCell align="center">{status}</TableCell>
       <TableCell align="center">{borrower.fullName}</TableCell>
       <TableCell align="right">{dueDate}</TableCell>
     </TableRow>

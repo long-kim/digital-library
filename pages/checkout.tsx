@@ -18,23 +18,13 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { NextPage } from 'next';
 import React, { useEffect, useState } from 'react';
-import { concat, forkJoin, from, of, throwError } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import {
-  catchError,
-  defaultIfEmpty,
-  flatMap,
-  map,
-  merge,
-  take,
-  tap,
-  throwIfEmpty,
-} from 'rxjs/operators';
+import { forkJoin, from, of, throwError } from 'rxjs';
+import { catchError, defaultIfEmpty, flatMap, map, tap } from 'rxjs/operators';
 import Navbar from '../components/navbar/Navbar';
 import { firebaseConfig } from '../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles(() =>
   createStyles({
     tableHead: {
       fontWeight: 'bold',
@@ -42,7 +32,7 @@ const useStyles = makeStyles(theme =>
   }),
 );
 
-export const StyledTableCell = withStyles(theme =>
+export const StyledTableCell = withStyles(() =>
   createStyles({
     head: {
       fontWeight: 'bold',
@@ -51,7 +41,7 @@ export const StyledTableCell = withStyles(theme =>
 )(TableCell);
 
 const CheckOut: NextPage = () => {
-  const [user, handleLogin, handleLogout] = useFirebaseAuth(firebaseConfig);
+  const [user, , handleLogout] = useFirebaseAuth(firebaseConfig);
   const [rentItems, setRentItems] = useState<any[] | null>(null);
   const classes = useStyles();
 
