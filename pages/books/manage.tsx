@@ -1,19 +1,4 @@
-import {
-  Box,
-  CircularProgress,
-  Container,
-  Grid,
-  Paper,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Tabs,
-  Typography,
-} from '@material-ui/core';
+import { Box, Container, Grid, Tab, Tabs } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -27,7 +12,6 @@ import MyBooks from '../../components/books/manage/MyBooks';
 import Navbar from '../../components/navbar/Navbar';
 import { firebaseConfig } from '../../firebase/config';
 import { RentStatus } from '../api/books/[bookId]/rent';
-import { StyledTableCell } from '../checkout';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 import { TabPanel } from '../users/[uid]';
 
@@ -61,7 +45,7 @@ const useStyles = makeStyles(theme =>
 );
 
 const BookManagement: NextPage = () => {
-  const [user, handleLogin, handleLogout] = useFirebaseAuth(firebaseConfig);
+  const [user, , handleLogout] = useFirebaseAuth(firebaseConfig);
   const [tab, setTab] = useState(0);
   const [myBooks, setMyBooks] = useState<any[] | null>(null);
   const [borrowedBooks, setBorrowedBooks] = useState<any[] | null>(null);

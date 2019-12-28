@@ -34,13 +34,15 @@ const Navbar: React.FC<INavbarProps> = ({ user, handleLogout }) => {
     <React.Fragment>
       <AppBar position="sticky">
         <Toolbar>
-          <Typography className={classes.title} variant="h6">
-            DIGITAL LIBRARY
-          </Typography>
+          <NavLink href="/">
+            <Typography className={classes.title} variant="h6">
+              DIGITAL LIBRARY
+            </Typography>
+          </NavLink>
           <div className={classes.links}>
             <NavLink href="/">Home</NavLink>
-            <NavLink href="/books">Thư viện</NavLink>
-            <NavLink href="/discover">Khám Phá</NavLink>
+            <NavLink href="/category">Thư viện</NavLink>
+            {/* <NavLink href="/discover">Khám Phá</NavLink> */}
             <NavLink href="/contact">Liên hệ</NavLink>
           </div>
           <SearchBar />

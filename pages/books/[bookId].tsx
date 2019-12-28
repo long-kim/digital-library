@@ -15,6 +15,8 @@ import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
+import { from, throwError } from 'rxjs';
+import { catchError, defaultIfEmpty, filter, map, tap } from 'rxjs/operators';
 import BookDetails from '../../components/books/BookDetails';
 import BookImageGallery from '../../components/books/BookImageGallery';
 import BorrowModal from '../../components/books/BorrowModal';
@@ -102,6 +104,7 @@ const BookShow: NextPage<BookShowProps> = ({ book, bookId }) => {
   const [user, _, handleLogout] = useFirebaseAuth(firebaseConfig);
   const [modalOpen, setModalOpen] = useState(false);
   const [reviews, setReviews] = useState<IReviewProps[] | null>(null);
+  const [relatedBooks, setRelatedBooks] = useState<any[] | null>(null);
 
   const classes = useStyles();
 
@@ -136,6 +139,37 @@ const BookShow: NextPage<BookShowProps> = ({ book, bookId }) => {
         err => console.error(err),
       );
   }, []);
+
+  useEffect(() => {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    const db = firebase.firestore();
+    if (book) {
+      const relatedBooksSubscription = from(
+        db
+          .collection('books')
+          .where('cate', 'array-contains', book.cate[0])
+          .limit(6)
+          .get(),
+      )
+        .pipe(
+          map(snapshot => snapshot.docs),
+          map(docs => docs.filter(doc => doc.id !== bookId)),
+          map(docs => docs.map(doc => ({ id: doc.id, data: doc.data() }))),
+          tap(docs => console.log(docs)),
+          defaultIfEmpty([]),
+          catchError(err => throwError(err)),
+        )
+        .subscribe(
+          related => setRelatedBooks(related),
+          err => console.error(err),
+        );
+
+      return () => relatedBooksSubscription.unsubscribe();
+    }
+  }, [bookId]);
 
   const handleClickOpen = () => setModalOpen(true);
 
@@ -218,11 +252,21 @@ const BookShow: NextPage<BookShowProps> = ({ book, bookId }) => {
               container
               spacing={3}
             >
-              {relatedList.map(({ id, name, coverURL }, idx) => (
-                <Grid key={idx} item md={6} lg={4}>
-                  <RelatedBook id={id} name={name} coverURL={coverURL} />
-                </Grid>
-              ))}
+              {relatedBooks ? (
+                relatedBooks.map((relatedBook, idx) => (
+                  <Grid key={idx} item md={6} lg={4}>
+                    <RelatedBook
+                      id={relatedBook.id}
+                      name={relatedBook.data.name}
+                      coverURL={relatedBook.data.img[0]}
+                    />
+                  </Grid>
+                ))
+              ) : (
+                <Box display="flex" justifyContent="center" width="100%" mt={8}>
+                  <CircularProgress />
+                </Box>
+              )}
             </Grid>
           </Grid>
         </Grid>

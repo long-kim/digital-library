@@ -3,6 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/styles';
 import clsx from 'clsx';
 import React, { useCallback, useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { IBook } from './interfaces';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -49,6 +50,9 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+interface IBookDetailsProps {
+  book: IBook | undefined;
+}
 interface IBookImageGalleryProps {
   images: string[] | undefined;
 }
@@ -60,38 +64,40 @@ const BookImageGallery: React.FC<IBookImageGalleryProps> = ({ images }) => {
   const handleImageChange = (index: number) => () => setCurrentImage(index);
 
   return (
-    <Grid className={classes.root} container>
-      <Grid className={classes.mainImgWrapper} item md={8}>
-        <img className={classes.mainImg} src={images?.[currentImage]} />
+    <React.Fragment>
+      <Grid className={classes.root} container>
+        <Grid className={classes.mainImgWrapper} item md={8}>
+          <img className={classes.mainImg} src={images?.[currentImage]} />
+        </Grid>
+        <Grid
+          className={classes.sidePanel}
+          item
+          container
+          md={4}
+          direction="column"
+          alignItems="flex-start"
+        >
+          {images?.map((imgURL, idx) => (
+            <Grid key={idx} item container>
+              <ButtonBase
+                className={clsx(classes.sideImg, {
+                  [classes.active]: idx === currentImage,
+                })}
+                onClick={handleImageChange(idx)}
+                disableRipple
+              >
+                <LazyLoadImage
+                  src={imgURL}
+                  effect="blur"
+                  height={250}
+                  width="100%"
+                />
+              </ButtonBase>
+            </Grid>
+          ))}
+        </Grid>
       </Grid>
-      <Grid
-        className={classes.sidePanel}
-        item
-        container
-        md={4}
-        direction="column"
-        alignItems="flex-start"
-      >
-        {images?.map((imgURL, idx) => (
-          <Grid key={idx} item container>
-            <ButtonBase
-              className={clsx(classes.sideImg, {
-                [classes.active]: idx === currentImage,
-              })}
-              onClick={handleImageChange(idx)}
-              disableRipple
-            >
-              <LazyLoadImage
-                src={imgURL}
-                effect="blur"
-                height={250}
-                width="100%"
-              />
-            </ButtonBase>
-          </Grid>
-        ))}
-      </Grid>
-    </Grid>
+    </React.Fragment>
   );
 };
 

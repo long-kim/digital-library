@@ -1,17 +1,20 @@
 import { createStyles, Theme } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import React, { Component, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../components/navbar/Navbar';
 import Book from '../components/search/book';
 import { firebaseConfig } from '../firebase/config';
+import { NextPage } from 'next';
+import { IBook } from '../components/books/interfaces';
 import useFirebaseAuth from './hooks/useFirebaseAuth';
+import useFirebaseSearch from '../hooks/useFirebaseSearch';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     searchTitle: {
-      margin: '50px 20px 30px 73px',
-      fontSize: '30px',
-      fontStyle: 'italic',
+      margin: '0px 20px 30px 73px',
+      fontSize: '24px',
+     
     },
     searchKetqua: {
       color: '#929292',
@@ -39,44 +42,44 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: '17px',
       textDecoration: 'none',
     },
+    big_body: {
+      width: '90%',
+      minHeight: '100vh',
+      margin: '20px auto',
+    },
+    body: {
+      margin: '1.5rem auto 0',
+      display: 'flex',
+      justifyContent: 'flex-start',
+      flexWrap: 'wrap',
+
+      [theme.breakpoints.down('md')]: {
+        width: '100%',
+      },
+      [theme.breakpoints.up('lg')]: {
+        width: '1120px',
+      },
+      [theme.breakpoints.up('xl')]: {
+        width: '1400px',
+      },
+    },
   }),
 );
 
-const products = [
-  { name: 'Percy Jackson book', img: '/img/book1.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book2.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book3.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book4.jpeg' },
-  { name: 'Percy Jackson book', img: '/img/book5.jpeg' },
-  { name: 'Percy Jackson book', img: '/img/book6.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book7.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book8.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book1.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book2.jpg' },
-  { name: 'Percy Jackson book', img: '/img/book3.jpg' },
-];
-
 interface IProps {
-  products: Array<Object>;
+  keySearch?: string;
 }
 
-// type IState = {
-//   totalPage?: number;
-//   currentPage?: number;
-//   perPage?: number;
-//   allProduct?: Array<Object> | undefined;
-// };
-
-const Search: React.FC<IProps> = () => {
+const Search: NextPage<IProps> = ({ keySearch }) => {
   const classes = useStyles();
+  const [response, handleSearch] = useFirebaseSearch(firebaseConfig);
   // const [totalPage, setTotalPage] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
-  const allProduct = products;
+  const perPage = 10;
 
-  const handleClick = (param: any) => (event: any) => {
+  const handleClick = (param: any) => () => {
     if (param === 'forward') {
-      if (currentPage < Math.ceil(products.length / perPage)) {
+      if (currentPage < Math.ceil(response.length / perPage)) {
         setCurrentPage(currentPage + 1);
       }
     }
@@ -87,53 +90,67 @@ const Search: React.FC<IProps> = () => {
       }
     }
   };
-
+  useEffect(() => {
+    handleSearch(keySearch as string);
+  }, [keySearch]);
   const [user, _, handleLogout] = useFirebaseAuth(firebaseConfig);
   const indexOfLast = currentPage * perPage;
   const indexOfFirst = indexOfLast - perPage;
-  let currentList: Object[];
+  let currentList: IBook[];
   currentList = [];
-  if (products) {
-    currentList = products.slice(indexOfFirst, indexOfLast);
+  if (response) {
+    currentList = response.slice(indexOfFirst, indexOfLast);
   }
-  const renderProduct = currentList.map((product: any, i) => {
+  const renderProduct = currentList.map((product: IBook, index: number) => {
+    console.log("product: ",product);
     let url;
-    url = '/display-product/' + product.name;
-    return <Book key={i} name={product.name} img={product.img} url={url} />;
+    url = '/books/' + product.id;
+    const img = product.data.img
+      ? product.data.img[0]
+      : 'https://photo-3-baomoi.zadn.vn/w1000_r1/2019_06_26_541_31230527/bef0744e090ee050b91f.jpg';
+    return <Book key={index} name={product.data.name} img={img} url={url} />;
   });
   return (
     <div>
       <Navbar page={'/'} user={user} handleLogout={handleLogout} />
-      <div className={classes.searchTitle}>
-        <span className={classes.searchKetqua}>Kết quả tìm kiếm: </span>
-        <span className={classes.searchKeyword}>Tiểu thuyết</span>
-      </div>
-      <div className={classes.searchDisplayBook}>{renderProduct}</div>
-      <div className={classes.searchPagination}>
-        <img
-          src="/img/chevron-left-solid.svg"
-          style={{
-            width: '24px',
-            height: '24px',
-            cursor: 'pointer',
-          }}
-          onClick={handleClick('back')}
-        />
-        <p className="paginate-number">
-          {currentPage}/{Math.ceil(products.length / perPage)}
-        </p>
-        <img
-          src="/img/chevron-right-solid.svg"
-          style={{
-            width: '24px',
-            height: '24px',
-            cursor: 'pointer',
-          }}
-          onClick={handleClick('forward')}
-        />
+      <div className={classes.big_body}>
+          <h1 className={classes.searchTitle}>
+          Kết quả tìm kiếm:  {keySearch}
+          </h1>
+        <div className={classes.body}>{renderProduct}</div>
+        <div className={classes.searchPagination}>
+          <img
+            src="/img/chevron-left-solid.svg"
+            style={{
+              width: '24px',
+              height: '24px',
+              cursor: 'pointer',
+            }}
+            onClick={handleClick('back')}
+          />
+          <p className="paginate-number">
+            {response.length !== 0 ? currentPage : 0}/
+            {Math.ceil(response.length / perPage)}
+          </p>
+          <img
+            src="/img/chevron-right-solid.svg"
+            style={{
+              width: '24px',
+              height: '24px',
+              cursor: 'pointer',
+            }}
+            onClick={handleClick('forward')}
+          />
+        </div>
       </div>
     </div>
   );
 };
 
+Search.getInitialProps = ({ query }) => {
+  const keySearch: string | undefined = query.keySearch
+    ? (query.keySearch as string)
+    : '';
+  return { keySearch };
+};
 export default Search;

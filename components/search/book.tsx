@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import { Theme } from '@material-ui/core';
+import Link from 'next/link';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -8,6 +9,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '188px',
       height: '287px',
       backgroundSize: 'cover',
+      objectFit: 'cover',
     },
     searchSubTitle: {
       color: '#3b3b3b',
@@ -48,15 +50,19 @@ const Book: React.FC<IProps> = ({ key, url, img, name }) => {
         // display: 'flex',
         // justifyContent: 'center',
         position: 'relative',
+        width: "200px",
+        margin: '0 40px',
       }}
     >
-      <a href={url} className={classes.searchSubTitle}>
+      <Link href="/books/[bookId]" as={url} passHref>
+        <div style = {{ cursor: "pointer"}} >
         <img src={img} alt={name} className={classes.searchBook} />
-        <button className={classes.addToCartBtn}>Thêm vào giỏ</button>
+        {/* <button className={classes.addToCartBtn}>Thêm vào giỏ</button> */}
         <div>
           <p style={{ marginTop: '0' }}>{name}</p>
         </div>
-      </a>
+        </div>
+      </Link>
     </div>
   );
 };

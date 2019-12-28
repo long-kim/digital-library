@@ -1,10 +1,10 @@
 import {
+  Avatar,
   Button,
   ButtonBase,
+  CircularProgress,
   fade,
   Grid,
-  Avatar,
-  CircularProgress,
 } from '@material-ui/core';
 import { createStyles, Theme } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
@@ -17,19 +17,19 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import React, { useEffect, useState } from 'react';
+import { concat, from, throwError } from 'rxjs';
+import {
+  catchError,
+  concatMap,
+  defaultIfEmpty,
+  flatMap,
+  map,
+  tap,
+} from 'rxjs/operators';
 import ButtonLink from '../components/index/ButtonLink';
 import Navbar from '../components/navbar/Navbar';
 import { firebaseConfig } from '../firebase/config';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
-import { from, concat, throwError } from 'rxjs';
-import {
-  tap,
-  map,
-  concatMap,
-  flatMap,
-  catchError,
-  defaultIfEmpty,
-} from 'rxjs/operators';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -67,6 +67,10 @@ const useStyles = makeStyles((theme: Theme) =>
       '&:hover': {
         backgroundColor: fade(theme.palette.common.white, 0.1),
       },
+    },
+    profileButton: {
+      borderRadius: '50rem',
+      padding: theme.spacing(1, 4),
     },
     booksContainer: {
       paddingBottom: theme.spacing(6),
@@ -251,14 +255,41 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
               Chào mừng bạn đã đến với thư viện điện tử do nhóm sinh viên đến từ
               trường ĐH Bách Khoa HCM thực hiện
             </Grid>
-            <Grid item>
-              <ButtonLink
-                className={classes.joinButton}
-                variant="outlined"
-                href="/signup"
-              >
-                Tham gia ngay
-              </ButtonLink>
+            <Grid item container justify="center" spacing={2}>
+              {user ? (
+                <React.Fragment>
+                  <Grid item>
+                    <ButtonLink
+                      className={classes.joinButton}
+                      variant="outlined"
+                      href="/category"
+                    >
+                      Đi tới thư viện
+                    </ButtonLink>
+                  </Grid>
+                  <Grid item>
+                    <ButtonLink
+                      className={classes.profileButton}
+                      variant="contained"
+                      color="primary"
+                      href="/users/[uid]"
+                      as={`/users/${user.uid}`}
+                    >
+                      Trang của tôi
+                    </ButtonLink>
+                  </Grid>
+                </React.Fragment>
+              ) : (
+                <Grid item>
+                  <ButtonLink
+                    className={classes.joinButton}
+                    variant="outlined"
+                    href="/signup"
+                  >
+                    Tham gia ngay
+                  </ButtonLink>
+                </Grid>
+              )}
             </Grid>
           </Grid>
         </Container>
@@ -281,60 +312,8 @@ const Index: NextPage<IHomeProps> = ({ pathname }) => {
           </Grid>
         </Grid>
       </Container>
-      {/* <Footer></Footer> */}
     </React.Fragment>
   );
-};
-
-Index.getInitialProps = async ctx => {
-  // TODO: pull in actual data
-  const products = [
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book1.jpg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book2.jpg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book3.jpg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book4.jpeg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book5.jpeg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book6.jpg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book7.jpg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-    {
-      name: 'Percy Jackson book',
-      img: '/img/book8.jpg',
-      id: '5BUoT3T1oSZoJbfLq6TH',
-    },
-  ];
-
-  return {
-    pathname: ctx.pathname,
-    books: products,
-  };
 };
 
 export default Index;
