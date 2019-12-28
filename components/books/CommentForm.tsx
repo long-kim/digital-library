@@ -96,6 +96,7 @@ const CommentForm: React.FC<ICommentFormProps> = ({ bookId, currentUid }) => {
           disabled={submit}
           fullWidth
           onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
           error={!_.isUndefined(formik.errors.content)}
           helperText={formik.errors.content}
         />
