@@ -2,20 +2,22 @@ import { Box, Container, Grid, Tab, Tabs } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import moment from 'moment';
 import { NextPage } from 'next';
+import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
 import { forkJoin, from, of, throwError } from 'rxjs';
 import { catchError, defaultIfEmpty, flatMap, map, tap } from 'rxjs/operators';
-import BorrowedBooks from '../../components/books/manage/BorrowedBooks';
-import MyBooks from '../../components/books/manage/MyBooks';
 import Navbar from '../../components/navbar/Navbar';
 import { firebaseConfig } from '../../firebase/config';
 import { RentStatus } from '../api/books/[bookId]/rent';
 import useFirebaseAuth from '../hooks/useFirebaseAuth';
 import { TabPanel } from '../users/[uid]';
 
-moment.locale('vi');
+const BorrowedBooks = dynamic(() =>
+  import('../../components/books/manage/BorrowedBooks'),
+);
+
+const MyBooks = dynamic(() => import('../../components/books/manage/MyBooks'));
 
 export const getDueDate = (
   borrowAt: firebase.firestore.Timestamp,
