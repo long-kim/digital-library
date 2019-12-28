@@ -101,24 +101,22 @@ const Search: NextPage<IProps> = ({ keySearch }) => {
   if (response) {
     currentList = response.slice(indexOfFirst, indexOfLast);
   }
-  const renderProduct = currentList.map((product: IBook) => {
+  const renderProduct = currentList.map((product: IBook, index: number) => {
+    console.log("product: ",product);
     let url;
     url = '/books/' + product.id;
     const img = product.data.img
       ? product.data.img[0]
       : 'https://photo-3-baomoi.zadn.vn/w1000_r1/2019_06_26_541_31230527/bef0744e090ee050b91f.jpg';
-    return <Book key={product.id} name={product.data.name} img={img} url={url} />;
+    return <Book key={index} name={product.data.name} img={img} url={url} />;
   });
   return (
     <div>
       <Navbar page={'/'} user={user} handleLogout={handleLogout} />
       <div className={classes.big_body}>
-       
           <h1 className={classes.searchTitle}>
           Kết quả tìm kiếm:  {keySearch}
-          </h1> 
-         
-       
+          </h1>
         <div className={classes.body}>{renderProduct}</div>
         <div className={classes.searchPagination}>
           <img

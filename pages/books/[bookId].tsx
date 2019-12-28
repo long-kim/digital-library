@@ -5,7 +5,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { NextPage } from 'next';
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BookDetails from '../../components/books/BookDetails';
 import BookImageGallery from '../../components/books/BookImageGallery';
 import BorrowModal from '../../components/books/BorrowModal';
@@ -147,7 +147,7 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
         .get()
         .then(snapshot => {
           snapshot.forEach(doc => {
-            if (doc.id !== bookId){
+            if (doc.id !== bookId) {
               data.push({
                 data: doc.data(),
                 id: doc.id,
@@ -158,7 +158,8 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
         });
     }
   };
-  // getCateItemList();
+
+  useEffect(getCateItemList, [bookId]);
 
   return (
     <React.Fragment>
@@ -213,7 +214,7 @@ const BookShow: NextPage<IBookShowProps> = ({ book, bookId }) => {
               container
               spacing={3}
             >
-              {response.map((book : any, i:any) => (
+              {response.map((book : IBook, i:any) => (
                 <Grid key={i} item md={6} lg={4}>
                   <RelatedBook id={book.id} name={book.data.name} coverURL={book.data.img[0]} />
                 </Grid>
