@@ -21,7 +21,7 @@
      "isomorphic-unfetch": "^3.0.0",
      "imagemin-optipng": "^7.1.0",
     "js-logger": "^1.6.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "lqip": "^2.1.0",
     "lqip-loader": "^2.2.0",
     "next": "^9.1.5",
